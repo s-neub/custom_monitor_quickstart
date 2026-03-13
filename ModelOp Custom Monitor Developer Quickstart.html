@@ -1,0 +1,1853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ModelOp Custom Monitor Quickstart Guide</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Viz.js (Graphviz) for ERD and Pathways -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/viz.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/full.render.js"></script>
+    <!-- HTML2Canvas for Slide Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- Google Fonts & Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #006630;
+            --primary-hover: #004d24;
+            --bg-color: #ffffff;
+            --panel-bg: #ffffff;
+            --panel-light: #f8fafc;
+            --text-main: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --card-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            --code-bg: #1a1a1a;
+            --code-border: #333333;
+            --pill-bg: #e2e8f0;
+            --pill-text: #475569;
+        }
+
+        .dark-mode {
+            --bg-color: #141414;
+            --panel-bg: #1e1e1e;
+            --panel-light: #252525;
+            --text-main: #e5e7eb;
+            --text-light: #9ca3af;
+            --border: #2e2e2e;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+            --code-bg: #141414;
+            --code-border: #2e2e2e;
+            --pill-bg: #334155;
+            --pill-text: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .page-section { display: none !important; animation: fadeIn 0.3s ease-out; }
+        .page-section.active { display: block !important; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        h2 { color: var(--text-main); letter-spacing: -0.02em; }
+        .text-body { color: var(--text-light); line-height: 1.6; }
+        .card { background-color: var(--panel-bg); border: 1px solid var(--border); border-radius: 0.5rem; box-shadow: var(--card-shadow); }
+
+        pre {
+            background-color: var(--code-bg); color: #d1d5db; padding: 1.25rem;
+            border-radius: 0.5rem; font-size: 0.85rem; border: 1px solid var(--code-border);
+            overflow-x: auto; line-height: 1.5;
+        }
+
+        /* Sidebar Styling & Minimization */
+        .sidebar-expanded { width: 256px; }
+        .sidebar-minimized { width: 80px; }
+        .sidebar-minimized .nav-text, .sidebar-minimized .nav-header-text, .sidebar-minimized .nav-footer { display: none; }
+        .sidebar-minimized .nav-btn { justify-content: center; padding-left: 0; padding-right: 0; }
+        .sidebar-minimized .nav-btn .material-symbols-outlined { margin: 0; font-size: 24px; }
+        
+        .nav-btn { color: var(--text-main); border-left: 4px solid transparent; }
+        .nav-btn:hover { color: var(--primary); background-color: var(--panel-light); }
+        .nav-btn.active { background-color: var(--panel-light); color: var(--primary); border-left: 4px solid var(--primary); font-weight: 600; }
+
+        .action-btn { height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 13px; font-weight: 500; gap: 6px; }
+        .action-btn-outline { background: transparent; color: var(--text-main); border: 1px solid var(--border); padding: 0 12px; }
+        .action-btn-outline:hover { background: var(--panel-light); border-color: var(--primary); }
+        .theme-toggle-btn { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; background: transparent; color: var(--text-light); }
+        .theme-toggle-btn:hover { background: var(--panel-light); color: var(--text-main); }
+
+        /* ERD Nodes & Interactive Elements */
+        #erd-canvas .node, #erd-agentic-canvas .node, #pathway-canvas .node { cursor: pointer; transition: opacity 0.2s; }
+        #erd-canvas .node:hover, #erd-agentic-canvas .node:hover, #pathway-canvas .node:hover { opacity: 0.8; }
+        #erd-canvas svg, #erd-agentic-canvas svg, #pathway-canvas svg { width: 100%; height: auto; max-height: 500px; }
+
+        .interactive-card { transition: all 0.2s ease; cursor: pointer; }
+        .interactive-card:hover { border-color: var(--primary); background: var(--panel-light); transform: translateY(-2px); }
+        .interactive-card.selected { border-color: var(--primary); background: var(--panel-light); border-left: 4px solid var(--primary); }
+        
+        .template-pill { background-color: var(--pill-bg); color: var(--pill-text); padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
+        .template-pill:hover { background-color: var(--panel-light); border-color: var(--border); }
+        .template-pill.active { background-color: var(--primary); color: white; }
+
+        .metric-btn { background-color: var(--panel-light); border: 1px solid var(--border); color: var(--text-main); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; }
+        .metric-btn:hover, .metric-btn.active-metric { border-color: var(--primary); background-color: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(0, 102, 48, 0.3); }
+
+        /* Glossary Tooltips */
+        .glossary-term { text-decoration: underline; text-decoration-style: dotted; text-decoration-color: var(--primary); cursor: help; position: relative; font-weight: 500; }
+        .glossary-term:hover::after {
+            content: attr(data-tooltip); position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%);
+            background-color: var(--text-main); color: var(--bg-color); padding: 8px 12px; border-radius: 6px;
+            font-size: 0.75rem; white-space: normal; width: 200px; text-align: left; z-index: 50; font-weight: normal;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2); pointer-events: none;
+        }
+
+        /* Accordion */
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin 0.3s ease-out; opacity: 0; margin-top: 0; }
+        .accordion-item.active .accordion-content { max-height: 250px; opacity: 1; margin-top: 0.75rem; }
+        .accordion-item.active .step-marker { background-color: var(--primary); color: white; }
+        .accordion-item.active .card { border-color: var(--primary); box-shadow: 0 4px 12px rgba(0, 102, 48, 0.1); }
+
+        /* Toast Notifications */
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;}
+        .toast { background: var(--panel-bg); color: var(--text-main); padding: 12px 20px; border-radius: 6px; font-size: 13px; border-left: 4px solid var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.15); opacity: 0; transform: translateY(20px); transition: all 0.3s ease; pointer-events: all; display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);}
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .dark-mode .toast { box-shadow: 0 4px 12px rgba(0,0,0,0.6); }
+
+        /* Metric Detail Formula block */
+        .metric-formula { display: inline-block; background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.8em; color: var(--primary); border: 1px solid var(--border); }
+        .dark-mode .metric-formula { background: rgba(255,255,255,0.05); }
+        input[type="checkbox"].accent-primary { accent-color: var(--primary); }
+
+        /* Slide Staging Area (16:9 Aspect Ratio) */
+        #slide-staging-area {
+            position: absolute; top: -9999px; left: -9999px;
+            width: 1280px; height: 720px;
+            background: white; color: #1e293b; font-family: 'Poppins', sans-serif;
+            z-index: -10; overflow: hidden; display: flex; flex-direction: column; padding: 40px; box-sizing: border-box;
+        }
+        #slide-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #006630; padding-bottom: 15px; margin-bottom: 25px; }
+        #slide-title { font-size: 32px; font-weight: 700; color: #006630; margin:0; padding:0; }
+        #slide-subtitle { font-size: 18px; color: #64748b; font-weight: 500; }
+        #slide-body { flex: 1; display: flex; gap: 30px; min-height: 0; overflow: hidden; }
+        .slide-inset { flex: 0 0 380px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; display: flex; flex-direction: column; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow-y: auto; }
+        .slide-inset h3 { font-size: 20px; font-weight: 700; color: #1e293b; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;}
+        .slide-inset .content { font-size: 14px; color: #475569; line-height: 1.5; }
+        .slide-visual-area { flex: 1; display: flex; align-items: center; justify-content: center; background: transparent; border-radius: 12px; overflow: hidden; position: relative;}
+        .slide-visual-area img, .slide-visual-area canvas, .slide-visual-area svg { max-width: 100%; max-height: 100%; object-fit: contain; }
+        #slide-footer { margin-top: 20px; display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8; font-weight: 600; }
+
+        /* Fullscreen & Floating Modal Modes */
+        .viz-fullscreen {
+            position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+            width: 100vw !important; height: 100vh !important; z-index: 9999 !important; border-radius: 0 !important;
+            display: flex !important; flex-direction: column !important; background: var(--bg-color) !important; padding: 0 !important; border: none !important;
+        }
+        .viz-fullscreen .zoom-pan-wrapper { height: 100% !important; max-height: none !important; width: 100% !important; padding: 0 !important; margin: 0 !important;}
+        
+        .floating-modal {
+            position: absolute; top: 20px; left: 20px; width: 340px; max-height: calc(100vh - 40px);
+            background: var(--panel-bg); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 10000; display: none; flex-direction: column; overflow: hidden; transition: height 0.3s ease;
+        }
+        .floating-modal.minimized { height: 38px !important; }
+        .floating-modal.active { display: flex; }
+        .floating-modal-content { overflow-y: auto; padding: 16px; flex: 1; }
+
+        /* Zoom Pan Wrapper */
+        .zoom-pan-wrapper { width: 100%; height: 100%; cursor: grab; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; padding: 0; margin: 0; }
+        .zoom-pan-wrapper:active { cursor: grabbing; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden flex-col md:flex-row relative">
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Global Floating Fullscreen Config Modal -->
+    <div id="fs-config-modal" class="floating-modal">
+        <div class="flex justify-between items-center bg-[var(--panel-light)] p-2 px-3 border-b border-[var(--border)] cursor-pointer" onclick="this.parentElement.classList.toggle('minimized'); const ic = this.querySelector('.expand-icon'); ic.innerText = ic.innerText === 'expand_more' ? 'expand_less' : 'expand_more';">
+            <span class="font-bold text-[var(--primary)] text-xs uppercase tracking-wider flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">tune</span> Config & Inspector</span>
+            <span class="material-symbols-outlined text-[16px] text-[var(--text-light)] expand-icon">expand_more</span>
+        </div>
+        <div class="floating-modal-content flex flex-col gap-4" id="fs-config-content">
+            <!-- Content cloned via JS -->
+        </div>
+    </div>
+
+    <!-- Hidden Slide Staging Area (for HTML2Canvas) -->
+    <div id="slide-staging-area">
+        <div id="slide-header">
+            <div>
+                <h1 id="slide-title">ModelOp Enterprise Governance</h1>
+            </div>
+            <div id="slide-subtitle">Curated Insight</div>
+        </div>
+        <div id="slide-body">
+            <div class="slide-inset" id="slide-inset">
+                <h3 id="slide-inset-title">Taxonomy Context</h3>
+                <div class="content" id="slide-inset-content"></div>
+            </div>
+            <div class="slide-visual-area" id="slide-visual">
+                <!-- SVG/Image injected dynamically -->
+            </div>
+        </div>
+        <div id="slide-footer">
+            <div>CONFIDENTIAL - FOR INTERNAL ENABLEMENT ONLY</div>
+            <div>ModelOp Center v3.4</div>
+        </div>
+    </div>
+
+    <!-- Floating Metric Tooltip -->
+    <div id="metric-floating-tooltip" class="fixed hidden z-50 bg-[var(--panel-bg)] border border-[var(--border)] shadow-2xl rounded-lg p-5 w-[350px] text-sm pointer-events-none transition-opacity duration-200 opacity-0">
+        <h4 id="tt-metric-title" class="font-bold text-[15px] text-[var(--primary)] mb-1 pb-2 border-b border-[var(--border)]"></h4>
+        <p id="tt-metric-desc" class="text-[var(--text-main)] mt-3 mb-2 text-[13px] leading-relaxed"></p>
+        <div id="tt-metric-formula-container" class="mb-3 hidden"><code id="tt-metric-formula" class="metric-formula"></code></div>
+        <ul class="text-xs text-[var(--text-light)] space-y-2 mt-2">
+            <li class="bg-[var(--panel-light)] p-2 rounded"><strong class="text-[var(--text-main)] block mb-1">Business Context:</strong> <span id="tt-metric-biz"></span></li>
+            <li class="bg-[var(--panel-light)] p-2 rounded"><strong class="text-[var(--text-main)] block mb-1">GRC Leaders:</strong> <span id="tt-metric-grc"></span></li>
+            <li class="bg-[var(--panel-light)] p-2 rounded"><strong class="text-[var(--text-main)] block mb-1">Model Owners:</strong> <span id="tt-metric-model"></span></li>
+        </ul>
+    </div>
+
+    <!-- Mobile Header -->
+    <div class="md:hidden flex flex-shrink-0 items-center justify-between bg-[var(--panel-bg)] p-4 border-b border-[var(--border)] z-20 shadow-sm">
+        <div><h1 class="text-xl font-bold text-[var(--primary)]">ModelOp</h1></div>
+        <div class="flex items-center gap-2">
+            <button onclick="window.exportCurrentSlide()" class="action-btn action-btn-outline hidden sm:flex text-[var(--primary)] border-[var(--primary)]" title="Download Current Tab as PPT Slide">
+                <span class="material-symbols-outlined text-[16px]">download</span> Slide
+            </button>
+            <button onclick="window.toggleTheme()" class="theme-toggle-btn"><span id="theme-icon-mobile" class="material-symbols-outlined">light_mode</span></button>
+            <button onclick="window.toggleMobileMenu()" class="theme-toggle-btn"><span class="material-symbols-outlined text-2xl">menu</span></button>
+        </div>
+    </div>
+
+    <div id="mobile-overlay" class="fixed inset-0 z-30 hidden md:hidden" onclick="window.toggleMobileMenu()"></div>
+
+    <!-- Sidebar Navigation -->
+    <nav id="sidebar" class="sidebar-expanded fixed md:relative inset-y-0 left-0 transform -translate-x-full md:translate-x-0 transition-all duration-300 ease-in-out bg-[var(--panel-bg)] border-r border-[var(--border)] flex flex-col h-full z-40 shadow-xl md:shadow-none shrink-0 overflow-hidden">
+        <div class="p-6 pb-4 flex justify-between items-center whitespace-nowrap">
+            <div class="nav-header-text overflow-hidden">
+                <h1 class="text-2xl font-bold text-[var(--primary)] tracking-tight">ModelOp</h1>
+                <p class="text-[10px] uppercase tracking-widest font-bold text-[var(--text-light)] mt-1">Quickstart Guide</p>
+            </div>
+            <div class="hidden md:flex items-center gap-1">
+                <button onclick="window.exportCurrentSlide()" class="action-btn action-btn-outline text-[var(--primary)] border-[var(--primary)] px-2" title="Download Current View as PPT Slide PNG">
+                    <span class="material-symbols-outlined text-[16px]">download</span>
+                </button>
+                <button onclick="window.toggleTheme()" class="theme-toggle-btn" title="Toggle Dark/Light Mode">
+                    <span id="theme-icon" class="material-symbols-outlined text-[20px]">light_mode</span>
+                </button>
+                <button onclick="window.toggleSidebarSize()" class="theme-toggle-btn text-[var(--text-light)] hover:text-[var(--primary)]" title="Collapse Sidebar">
+                    <span id="sidebar-icon" class="material-symbols-outlined text-[20px]">keyboard_double_arrow_left</span>
+                </button>
+            </div>
+            <button onclick="window.toggleMobileMenu()" class="md:hidden text-[var(--text-main)]"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        
+        <div class="flex-1 py-4 overflow-y-auto mt-2">
+            <ul class="space-y-1">
+                <li>
+                    <button class="nav-btn active w-full text-left px-6 py-3 text-sm flex items-center gap-3 transition-colors" onclick="window.switchTab(this, 'dashboard')" title="Overview">
+                        <span class="material-symbols-outlined text-[20px]">dashboard_customize</span> <span class="nav-text">Overview</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn w-full text-left px-6 py-3 text-sm flex items-center gap-3 transition-colors" onclick="window.switchTab(this, 'catalog')" title="DS Metrics Catalog">
+                        <span class="material-symbols-outlined text-[20px]">analytics</span> <span class="nav-text">DS Metrics Catalog</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn w-full text-left px-6 py-3 text-sm flex items-center gap-3 transition-colors" onclick="window.switchTab(this, 'pathway')" title="Selection Pathway">
+                        <span class="material-symbols-outlined text-[20px]">route</span> <span class="nav-text">Selection Pathway</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn w-full text-left px-6 py-3 text-sm flex items-center gap-3 transition-colors" onclick="window.switchTab(this, 'architecture')" title="Execution Architecture">
+                        <span class="material-symbols-outlined text-[20px]">account_tree</span> <span class="nav-text">Execution Architecture</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn w-full text-left px-6 py-3 text-sm flex items-center gap-3 transition-colors" onclick="window.switchTab(this, 'artifacts')" title="Artifact Explorer">
+                        <span class="material-symbols-outlined text-[20px]">code_blocks</span> <span class="nav-text">Artifact Explorer</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn w-full text-left px-6 py-3 text-sm flex items-center gap-3 transition-colors" onclick="window.switchTab(this, 'deployment')" title="Deployment Workflow">
+                        <span class="material-symbols-outlined text-[20px]">call_made</span> <span class="nav-text">Deployment Workflow</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+        <div class="nav-footer p-6 border-t border-[var(--border)] text-[11px] text-[var(--text-light)] leading-relaxed whitespace-normal">
+            Reference: <a href="https://modelopdocs.atlassian.net/wiki/spaces/dv33/pages/1978436307/Monitor+Report" target="_blank" class="text-[var(--primary)] hover:underline">ModelOp v3.4 Master Docs</a>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 h-full overflow-y-auto relative bg-[var(--bg-color)] flex flex-col" id="main-content-scroll">
+        <div class="p-6 md:p-10 lg:p-12 flex-1 relative">
+            
+            <!-- SECTION 1: Overview -->
+            <section id="dashboard" class="page-section active max-w-4xl mx-auto">
+                <div class="mb-10">
+                    <h2 class="text-3xl font-bold mb-4 tracking-tight">Bridging Standard Metrics & Enterprise Needs</h2>
+                    <p class="text-body text-lg">ModelOp Center provides a comprehensive suite of out-of-the-box (OOTB) monitors. However, enterprise requirements often demand unique calculations. This guide introduces the capabilities of custom Python-based monitors.</p>
+                </div>
+                <div class="space-y-6 mb-10">
+                    <div class="card p-6 border-l-4 border-l-[var(--primary)]">
+                        <h4 class="font-bold text-[15px] mb-2 flex items-center gap-2 text-[var(--text-main)]">
+                            <span class="material-symbols-outlined text-[18px] text-[var(--primary)]">code</span> The Developer Value
+                        </h4>
+                        <p class="text-sm text-body">Write standard Python code using <span class="glossary-term" data-tooltip="Libraries like Pandas, Scikit-learn, SciPy, etc.">Data Science libraries</span> and have it automatically integrated into an enterprise-grade governance platform. No complex API integrations required.</p>
+                    </div>
+                    <div class="card p-6 border-l-4 border-l-[var(--primary)]">
+                        <h4 class="font-bold text-[15px] mb-2 flex items-center gap-2 text-[var(--text-main)]">
+                            <span class="material-symbols-outlined text-[18px] text-[var(--primary)]">verified_user</span> The Governance Value
+                        </h4>
+                        <p class="text-sm text-body">Ensures that no matter how complex the model metric, the "evidence" is always captured in a standardized, auditable format for risk and compliance.</p>
+                    </div>
+                </div>
+                <div class="card p-8">
+                    <h4 class="font-bold text-xl mb-2 text-[var(--text-main)]">Monitors by Model Modality</h4>
+                    <p class="text-sm text-body mb-8">Custom monitors can be built to supplement any of these OOTB categories based on your domain.</p>
+                    <div class="relative w-full h-[300px]"><canvas id="capChart"></canvas></div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: Data Science Metrics Catalog -->
+            <section id="catalog" class="page-section max-w-6xl mx-auto pb-10">
+                <div class="mb-10">
+                    <h2 class="text-3xl font-bold mb-4 tracking-tight">Data Science Metrics Catalog</h2>
+                    <p class="text-body text-lg">Hover or click on any metric pill below to view its algorithmic definition and dual-persona insights. These definitions guide standard and custom monitor creation.</p>
+                </div>
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <div class="card p-6 flex flex-col h-full xl:col-span-2 border-t-4 border-t-[var(--primary)]">
+                        <div class="flex items-center gap-3 mb-4 border-b border-[var(--border)] pb-3">
+                            <span class="material-symbols-outlined text-[var(--primary)] text-[28px]">psychology</span>
+                            <h4 class="font-bold text-xl text-[var(--text-main)]">1. Generative AI / NLP Validations</h4>
+                        </div>
+                        <p class="text-sm text-body mb-4">Secures conversational agents and generative models against hallucinations, toxic output, and data leakage.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'pii')" onmouseleave="window.hideMetricTooltip()">PII/PHI Disclosure Detection</button>
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'prompt_template')" onmouseleave="window.hideMetricTooltip()">Prompt Template Verification</button>
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'rails')" onmouseleave="window.hideMetricTooltip()">Rails Compliance</button>
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'sentiment')" onmouseleave="window.hideMetricTooltip()">Sentiment Analysis</button>
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'sbert')" onmouseleave="window.hideMetricTooltip()">SBERT Similarity</button>
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'cross_llm')" onmouseleave="window.hideMetricTooltip()">Cross-LLM Validation</button>
+                        </div>
+                    </div>
+                    <div class="card p-6 flex flex-col h-full border-t-4 border-t-[#8b5cf6]">
+                        <div class="flex items-center gap-3 mb-4 border-b border-[var(--border)] pb-3">
+                            <span class="material-symbols-outlined text-[#8b5cf6] text-[28px]">balance</span>
+                            <h4 class="font-bold text-lg text-[var(--text-main)]">2. Ethical Fairness & Bias</h4>
+                        </div>
+                        <p class="text-sm text-body mb-4 flex-1">Evaluates model behavior disparities against <span class="glossary-term" data-tooltip="A column flagged in the schema representing attributes like race, gender, or age.">protected classes</span> to ensure regulatory compliance.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'pred_pos_disp')" onmouseleave="window.hideMetricTooltip()">Predicted Positive Disparity</button>
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'for_disp')" onmouseleave="window.hideMetricTooltip()">False Omission Rate (FOR) Disparity</button>
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'fdr_disp')" onmouseleave="window.hideMetricTooltip()">FDR Disparity</button>
+                        </div>
+                    </div>
+                    <div class="card p-6 flex flex-col h-full border-t-4 border-t-[#f59e0b]">
+                        <div class="flex items-center gap-3 mb-4 border-b border-[var(--border)] pb-3">
+                            <span class="material-symbols-outlined text-[#f59e0b] text-[28px]">show_chart</span>
+                            <h4 class="font-bold text-lg text-[var(--text-main)]">3. Regression & Credit Risk</h4>
+                        </div>
+                        <p class="text-sm text-body mb-4 flex-1">Assesses continuous prediction errors and rank-ordering capabilities, crucial for financial/credit models.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'mae')" onmouseleave="window.hideMetricTooltip()">MAE</button>
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'rmse')" onmouseleave="window.hideMetricTooltip()">RMSE</button>
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'r2')" onmouseleave="window.hideMetricTooltip()">R-Squared</button>
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'gini')" onmouseleave="window.hideMetricTooltip()">Gini Coefficient</button>
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'cstat')" onmouseleave="window.hideMetricTooltip()">C-Stat</button>
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'rank_break')" onmouseleave="window.hideMetricTooltip()">Rank-Order Break</button>
+                        </div>
+                    </div>
+                    <div class="card p-6 flex flex-col h-full border-t-4 border-t-[#10b981]">
+                        <div class="flex items-center gap-3 mb-4 border-b border-[var(--border)] pb-3">
+                            <span class="material-symbols-outlined text-[#10b981] text-[28px]">join_inner</span>
+                            <h4 class="font-bold text-lg text-[var(--text-main)]">4. Classification Performance</h4>
+                        </div>
+                        <p class="text-sm text-body mb-4 flex-1">Evaluates discrete prediction models. Requires schemas mapping <code>score_column</code> and <code>label_column</code>.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'accuracy')" onmouseleave="window.hideMetricTooltip()">Accuracy</button>
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'auc')" onmouseleave="window.hideMetricTooltip()">AUC-ROC</button>
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'precision')" onmouseleave="window.hideMetricTooltip()">Precision</button>
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'recall')" onmouseleave="window.hideMetricTooltip()">Recall</button>
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'f1')" onmouseleave="window.hideMetricTooltip()">F1-Score</button>
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'cm')" onmouseleave="window.hideMetricTooltip()">Confusion Matrix</button>
+                        </div>
+                    </div>
+                    <div class="card p-6 flex flex-col h-full border-t-4 border-t-[#3b82f6]">
+                        <div class="flex items-center gap-3 mb-4 border-b border-[var(--border)] pb-3">
+                            <span class="material-symbols-outlined text-[#3b82f6] text-[28px]">query_stats</span>
+                            <h4 class="font-bold text-lg text-[var(--text-main)]">5. Data & Concept Drift</h4>
+                        </div>
+                        <p class="text-sm text-body mb-4 flex-1">Detects shifts in input distributions over time by comparing <span class="glossary-term" data-tooltip="The reference dataset, usually the training data.">baseline data</span> against a sample slice.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'ks')" onmouseleave="window.hideMetricTooltip()">Kolmogorov-Smirnov (KS)</button>
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'epps')" onmouseleave="window.hideMetricTooltip()">Epps-Singleton</button>
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'jsd')" onmouseleave="window.hideMetricTooltip()">Jensen-Shannon</button>
+                            <button class="metric-btn" onmouseenter="window.activateMetric(event, 'kl')" onmouseleave="window.hideMetricTooltip()">Kullback-Leibler</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-8">
+                    <div id="quick-copy-container" class="bg-[var(--panel-bg)] border border-[var(--border)] rounded-xl shadow-lg transition-all duration-300 opacity-0 hidden">
+                        <div class="bg-[var(--panel-light)] border-b border-[var(--border)] px-5 py-3 flex justify-between items-center rounded-t-xl">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[var(--primary)] text-lg">markdown</span>
+                                <span class="text-xs font-bold text-[var(--text-main)] uppercase tracking-widest">Active Tooltip Detail</span>
+                            </div>
+                            <button onclick="window.copyMetricMarkdown(this)" class="py-1 px-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded text-xs flex items-center gap-1 transition-all shadow-sm">
+                                <span class="material-symbols-outlined text-[14px] copy-icon">content_copy</span> <span class="copy-text">Copy Raw Markdown</span>
+                            </button>
+                        </div>
+                        <div class="p-6">
+                            <div class="mb-4 pb-4 border-b border-[var(--border)]">
+                                <p class="text-xs text-[var(--text-light)] italic border-l-2 border-[var(--primary)] pl-3">
+                                    <strong>ModelOp Governance Philosophy:</strong> A mathematical formula is just a number until mapped to a business outcome. ModelOp Center links these raw statistical inferences to operational ground truth, establishing tangible enterprise KPIs (e.g., P&L impact, risk tiering, compliance validation) necessary for automated governance.
+                                </p>
+                            </div>
+                            <div id="quick-copy-rendered" class="text-[14px] text-[var(--text-main)] mb-6">
+                                <p class="text-[var(--text-light)] italic">Hover over a metric pill above to load its detailed data science definition...</p>
+                            </div>
+                            <div class="mt-6 pt-4 border-t border-[var(--border)]">
+                                <h5 class="text-xs font-bold text-[var(--text-light)] uppercase tracking-wider mb-3">ModelOp Reference Documentation</h5>
+                                <ul class="space-y-2 flex flex-col text-sm">
+                                    <li><a href="https://modelopdocs.atlassian.net/wiki/spaces/dv33/pages/1978436307/Monitor+Report" target="_blank" class="text-[var(--primary)] hover:underline flex items-center gap-1 w-fit"><span class="material-symbols-outlined text-[16px]">open_in_new</span> Monitor & Report Capabilities</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- SECTION 3: Selection Pathway -->
+            <section id="pathway" class="page-section max-w-full mx-auto">
+                <div class="mb-8 max-w-6xl mx-auto">
+                    <h2 class="text-3xl font-bold mb-4 tracking-tight">Enterprise Monitor Selection Pathway</h2>
+                    <p class="text-body text-lg max-w-4xl">Selecting the right AI monitor requires mapping the technical model type directly to enterprise business outcomes. Use this dynamic tree to navigate from your raw data state to the specific ModelOp monitors required.</p>
+                </div>
+                
+                <div class="flex flex-col lg:flex-row gap-6 relative lg:h-[600px] w-full">
+                    <!-- Left: Node Inspector -->
+                    <div class="w-full lg:w-80 flex flex-col gap-4 shrink-0 h-full card p-6" id="pathway-inspector-container">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-bold text-[var(--primary)] uppercase tracking-wider text-xs flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[14px]">manage_search</span> Node Inspector 
+                            </h3>
+                            <span class="text-[10px] text-[var(--text-light)] ml-auto normal-case tracking-normal">(Ctrl+Click for Multi)</span>
+                        </div>
+                        <h4 id="pw-detail-title" class="font-bold text-lg mb-2 text-[var(--text-main)]">Model Selection</h4>
+                        <div id="pw-detail-content" class="text-sm text-body flex-1 overflow-y-auto space-y-3 pr-2">
+                            Select your model types above, then click nodes in the graph to map the required governance monitors to their specific enterprise use cases.
+                        </div>
+                        <div class="mt-auto pt-4 border-t border-[var(--border)]">
+                            <div class="text-[10px] uppercase font-bold text-[var(--text-light)]">System Component Identifier</div>
+                            <div id="pw-detail-system" class="text-xs font-mono bg-[var(--panel-light)] border border-[var(--border)] text-[var(--text-main)] px-2 py-1 rounded mt-1 inline-block">modelop.model.registration</div>
+                        </div>
+                    </div>
+
+                    <!-- Middle: Canvas -->
+                    <div class="card flex-1 flex flex-col min-h-[500px] lg:min-h-0 h-full overflow-hidden bg-[var(--panel-light)] border-[var(--border)] relative" id="pathway-card-container">
+                        <button onclick="window.toggleFullscreen('pathway-card-container', 'pathway-inspector-container', 'pathway-filters-container')" class="absolute top-4 right-4 z-20 bg-[var(--panel-bg)] border border-[var(--border)] p-1.5 rounded hover:text-[var(--primary)] text-[var(--text-light)] shadow-sm transition-colors"><span class="material-symbols-outlined text-[18px]">fullscreen</span></button>
+                        <div id="pathway-canvas" class="zoom-pan-wrapper w-full h-full">
+                            <div class="animate-pulse text-[var(--text-light)] flex items-center justify-center w-full h-full gap-2"><span class="material-symbols-outlined animate-spin">sync</span> Generating Pathway Map...</div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Filters -->
+                    <div class="w-full lg:w-72 flex flex-col gap-4 shrink-0 h-full card p-6" id="pathway-filters-container">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-bold text-[var(--primary)] uppercase tracking-wider text-xs flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[16px]">filter_alt</span> Pathway Filters
+                            </h3>
+                            <button onclick="this.parentElement.nextElementSibling.classList.toggle('hidden')" class="text-[var(--text-light)] hover:text-[var(--primary)]"><span class="material-symbols-outlined text-[16px]">unfold_less</span></button>
+                        </div>
+                        <div class="transition-all flex flex-col flex-1">
+                            <p class="text-xs text-[var(--text-light)] mb-4">Toggle model types below to dynamically generate the recommended monitor pathway branches.</p>
+                            <div class="space-y-3">
+                                <label class="flex items-center gap-3 text-sm text-[var(--text-main)] cursor-pointer hover:bg-[var(--panel-light)] p-2 rounded transition-colors border border-transparent hover:border-[var(--border)]">
+                                    <input type="checkbox" id="cb-class" class="accent-primary w-4 h-4" checked onchange="window.renderPathwayERD()"> <span class="font-medium">Classification Models</span>
+                                </label>
+                                <label class="flex items-center gap-3 text-sm text-[var(--text-main)] cursor-pointer hover:bg-[var(--panel-light)] p-2 rounded transition-colors border border-transparent hover:border-[var(--border)]">
+                                    <input type="checkbox" id="cb-reg" class="accent-primary w-4 h-4" checked onchange="window.renderPathwayERD()"> <span class="font-medium">Regression Models</span>
+                                </label>
+                                <label class="flex items-center gap-3 text-sm text-[var(--text-main)] cursor-pointer hover:bg-[var(--panel-light)] p-2 rounded transition-colors border border-transparent hover:border-[var(--border)]">
+                                    <input type="checkbox" id="cb-llm" class="accent-primary w-4 h-4" checked onchange="window.renderPathwayERD()"> <span class="font-medium">GenAI & LLMs</span>
+                                </label>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-[var(--border)]">
+                                <h4 class="font-bold text-[var(--text-main)] text-xs mb-2">Industry Context Presets</h4>
+                                <select class="w-full text-sm bg-[var(--bg-color)] border border-[var(--border)] text-[var(--text-main)] rounded p-1 mb-2" onchange="window.applyIndustryTemplate(this.value, 'pathway')">
+                                    <option value="">-- Standard Enterprise --</option>
+                                    <option value="banking">Banking (Fraud/AML)</option>
+                                    <option value="credit">Credit (Underwriting)</option>
+                                    <option value="healthcare">Healthcare (Diagnosis/PHI)</option>
+                                    <option value="causality">Causality (Marketing Lift)</option>
+                                </select>
+                                <div id="pathway-industry-rec" class="text-xs text-[var(--primary)] font-medium hidden p-2 bg-[var(--panel-light)] rounded border border-[var(--primary)] mt-2"></div>
+                            </div>
+                            <div class="mt-auto pt-4 border-t border-[var(--border)]">
+                                <p class="text-[10px] text-[var(--text-light)] leading-tight italic flex items-start gap-1">
+                                    <span class="material-symbols-outlined text-[12px] shrink-0">info</span>
+                                    Disclaimer: This is an enablement tool intended for guidance and is not to be used for final or automated business decision making.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: ERD Architecture -->
+            <section id="architecture" class="page-section max-w-6xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold mb-4 tracking-tight">Key Concepts: Execution Architectures</h2>
+                        <p class="text-body text-lg">Interact with the architecture diagrams below. Toggle between standard monitoring and agentic LLM patterns.</p>
+                    </div>
+                    <div class="bg-[var(--panel-light)] p-1 rounded-lg border border-[var(--border)] flex shrink-0">
+                        <button id="btn-arch-standard" onclick="window.switchArchitecture('standard')" class="px-4 py-2 rounded-md text-sm font-semibold transition-all bg-[var(--primary)] text-white shadow-sm">Standard Monitor</button>
+                        <button id="btn-arch-agentic" onclick="window.switchArchitecture('agentic')" class="px-4 py-2 rounded-md text-sm font-semibold text-[var(--text-light)] hover:text-[var(--text-main)] transition-all">Agentic LLM</button>
+                    </div>
+                </div>
+
+                <!-- Standard ERD Canvas -->
+                <div id="arch-standard-container" class="flex flex-col lg:flex-row gap-8 relative lg:h-[600px]">
+                    <div class="w-full lg:w-80 flex flex-col gap-4 shrink-0 h-full" id="arch-controls">
+                        <div class="card p-6 h-full flex flex-col min-h-[300px] lg:min-h-0">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="font-bold text-[var(--primary)] uppercase tracking-wider text-xs flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[14px]">manage_search</span> Node Inspector
+                                </h3>
+                                <span class="text-[10px] text-[var(--text-light)] ml-auto normal-case tracking-normal">Ctrl+Click multi</span>
+                            </div>
+                            <h4 id="erd-detail-title" class="font-bold text-xl mb-3 text-[var(--text-main)]">Execution Process</h4>
+                            <div id="erd-detail-content" class="text-sm text-body space-y-3 flex-1 overflow-y-auto pr-2">
+                                <p>Select a node in the diagram to view its details.</p>
+                                <ol class="list-decimal pl-4 space-y-2 mt-4 text-xs text-[var(--text-light)]">
+                                    <li>Process initiated (via UI/API)</li>
+                                    <li>Metrics job created (via MLC)</li>
+                                    <li>Job sent to Runtime</li>
+                                    <li>Runtime loads datasets & code</li>
+                                    <li>Runtime executes Python source</li>
+                                    <li>Output yielded as JSON</li>
+                                    <li>Model Test Result attached</li>
+                                </ol>
+                            </div>
+                            <div class="mt-auto pt-4 border-t border-[var(--border)]" id="erd-sys-wrapper">
+                                <div class="text-[10px] uppercase font-bold text-[var(--text-light)]">System Component Identifier</div>
+                                <div id="erd-detail-system" class="text-xs font-mono bg-[var(--panel-light)] border border-[var(--border)] text-[var(--text-main)] px-2 py-1 rounded mt-1 inline-block">modelop.core</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card flex-1 flex flex-col min-h-[500px] lg:min-h-0 h-full overflow-hidden relative" id="erd-card-container">
+                        <button onclick="window.toggleFullscreen('erd-card-container', 'arch-controls')" class="absolute top-4 right-4 z-20 bg-[var(--panel-bg)] border border-[var(--border)] p-1.5 rounded hover:text-[var(--primary)] text-[var(--text-light)] shadow-sm transition-colors"><span class="material-symbols-outlined text-[18px]">fullscreen</span></button>
+                        <div id="erd-canvas" class="zoom-pan-wrapper w-full h-full">
+                            <div class="animate-pulse text-[var(--text-light)] flex items-center justify-center w-full h-full gap-2"><span class="material-symbols-outlined animate-spin">sync</span> Generating Architecture Map...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agentic Viz.js Canvas -->
+                <div id="arch-agentic-container" class="hidden flex-col lg:flex-row gap-8 transition-all relative lg:h-[600px]">
+                    <div class="w-full lg:w-80 flex flex-col gap-4 shrink-0 h-full" id="agentic-controls">
+                        <div class="card p-6 h-full flex flex-col min-h-[300px] lg:min-h-0">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="font-bold text-[var(--primary)] uppercase tracking-wider text-xs flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[14px]">manage_search</span> Node Inspector
+                                </h3>
+                                <span class="text-[10px] text-[var(--text-light)] ml-auto normal-case tracking-normal">Ctrl+Click multi</span>
+                            </div>
+                            <h4 id="erd-agentic-detail-title" class="font-bold text-xl mb-3 text-[var(--text-main)]">Agentic Architecture</h4>
+                            <div id="erd-agentic-detail-content" class="text-sm text-body space-y-3 flex-1 overflow-y-auto pr-2">
+                                <p>Select a node in the diagram to view its details.</p>
+                                <ul class="list-disc pl-4 space-y-2 mt-4 text-xs text-[var(--text-light)]">
+                                    <li>Autonomous reasoning & planning</li>
+                                    <li>Tool and API execution (MCP)</li>
+                                    <li>Multi-agent orchestration</li>
+                                    <li>Guardrail validations</li>
+                                    <li>Continuous LLM monitoring</li>
+                                </ul>
+                            </div>
+                            <div class="mt-auto pt-4 border-t border-[var(--border)]" id="agentic-sys-wrapper">
+                                <div class="text-[10px] uppercase font-bold text-[var(--text-light)]">System Component Identifier</div>
+                                <div id="erd-agentic-detail-system" class="text-xs font-mono bg-[var(--panel-light)] border border-[var(--border)] text-[var(--text-main)] px-2 py-1 rounded mt-1 inline-block">modelop.agent</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card flex-1 flex flex-col min-h-[500px] lg:min-h-0 h-full overflow-hidden relative" id="agentic-card-container">
+                        <button onclick="window.toggleFullscreen('agentic-card-container', 'agentic-controls')" class="absolute top-4 right-4 z-20 bg-[var(--panel-bg)] border border-[var(--border)] p-1.5 rounded hover:text-[var(--primary)] text-[var(--text-light)] shadow-sm transition-colors"><span class="material-symbols-outlined text-[18px]">fullscreen</span></button>
+                        <div id="erd-agentic-canvas" class="zoom-pan-wrapper w-full h-full">
+                            <div class="animate-pulse text-[var(--text-light)] flex items-center justify-center w-full h-full gap-2"><span class="material-symbols-outlined animate-spin">sync</span> Generating Architecture Map...</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: Artifact Explorer -->
+            <section id="artifacts" class="page-section max-w-6xl mx-auto">
+                <div class="mb-10">
+                    <h2 class="text-3xl font-bold mb-4 tracking-tight">Artifact Explorer & Generator</h2>
+                    <p class="text-body text-lg">A custom monitor is defined by specific files in a Git repository. Explore the required structure and generate contextual Data Science code boilerplates.</p>
+                </div>
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <div class="w-full lg:w-[280px] xl:w-1/4 space-y-4 shrink-0">
+                        <div class="text-xs font-bold text-[var(--text-light)] uppercase tracking-widest mb-2 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">verified</span> Required Files
+                        </div>
+                        <div id="card-py" class="card p-4 interactive-card selected" onclick="window.showArtifact('py')">
+                            <h4 class="font-bold text-[14px] flex items-center justify-between text-[var(--text-main)]">custom_metrics.py <span class="material-symbols-outlined text-[16px] text-[var(--primary)]">terminal</span></h4>
+                            <p class="text-xs text-body mt-1">Primary Model Source Code</p>
+                        </div>
+                        <div id="card-json" class="card p-4 interactive-card" onclick="window.showArtifact('json')">
+                            <h4 class="font-bold text-[14px] flex items-center justify-between text-[var(--text-main)]">metadata.json <span class="material-symbols-outlined text-[16px] text-blue-500">data_object</span></h4>
+                            <p class="text-xs text-body mt-1">Monitor Classification Meta</p>
+                        </div>
+                        <div id="card-req" class="card p-4 interactive-card" onclick="window.showArtifact('req')">
+                            <h4 class="font-bold text-[14px] flex items-center justify-between text-[var(--text-main)]">required_assets.json <span class="material-symbols-outlined text-[16px] text-orange-500">list_alt</span></h4>
+                            <p class="text-xs text-body mt-1">Input Data Definitions</p>
+                        </div>
+                    </div>
+                    <div class="flex-1 w-full min-w-0">
+                        <div class="card p-0 flex flex-col overflow-hidden h-full min-h-[600px]">
+                            <div class="p-6 border-b border-[var(--border)] bg-[var(--panel-light)] shrink-0">
+                                <h3 id="art-title" class="text-lg font-bold text-[var(--text-main)] font-mono">custom_metrics.py</h3>
+                                <p id="art-desc" class="text-body text-sm mt-2">The algorithmic brain. Use the pills below to generate boilerplate logic for different Data Science use cases.</p>
+                                <div id="template-selector" class="flex flex-wrap gap-2 mt-4">
+                                    <button class="template-pill active" data-type="class" onclick="window.switchTemplate('class')">Classification</button>
+                                    <button class="template-pill" data-type="drift" onclick="window.switchTemplate('drift')">Data Drift (SciPy)</button>
+                                    <button class="template-pill" data-type="llm" onclick="window.switchTemplate('llm')">LLM Validation</button>
+                                </div>
+                            </div>
+                            <div class="relative flex-1 group bg-[var(--code-bg)] overflow-hidden flex flex-col">
+                                <button onclick="window.copyArtifactCode(this)" class="absolute top-4 right-4 py-1.5 px-3 bg-[#2d2d2d] hover:bg-[#3d3d3d] border border-[#444] rounded text-xs text-gray-200 flex items-center gap-1.5 transition-all opacity-0 group-hover:opacity-100 z-10 focus:opacity-100 shadow-md">
+                                    <span class="material-symbols-outlined text-[14px] copy-icon">content_copy</span> <span class="copy-text">Copy</span>
+                                </button>
+                                <pre class="flex-1 m-0 rounded-none border-none p-6 text-[#e5e7eb] overflow-auto"><code id="art-code" class="language-python"></code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 6: Deployment -->
+            <section id="deployment" class="page-section max-w-4xl mx-auto">
+                <div class="mb-10">
+                    <h2 class="text-3xl font-bold mb-4 tracking-tight">Onboarding Roadmap</h2>
+                    <p class="text-body text-lg">Follow this interactive guide to promote your custom monitor from a local IDE script into a production-ready ModelOp asset.</p>
+                </div>
+                <div class="space-y-4 relative ml-4 md:ml-0">
+                    <div class="absolute left-[23px] top-8 bottom-8 w-0.5 bg-[var(--border)] z-0"></div>
+                    <div class="accordion-item active relative flex items-start gap-6 group cursor-pointer" onclick="window.toggleAccordion(this)">
+                        <div class="step-marker w-12 h-12 rounded-full bg-[var(--panel-bg)] border-[3px] border-[var(--primary)] text-[var(--primary)] flex items-center justify-center font-bold shrink-0 z-10 shadow-sm transition-colors">1</div>
+                        <div class="card p-6 w-full transition-all">
+                            <div class="flex justify-between items-center">
+                                <h4 class="font-bold text-[17px] text-[var(--text-main)] flex items-center gap-2"><span class="material-symbols-outlined text-[var(--text-light)] text-[18px]">cloud_upload</span> Connect Git Repository</h4>
+                                <span class="material-symbols-outlined text-[var(--text-light)] transition-transform duration-300">expand_more</span>
+                            </div>
+                            <div class="accordion-content text-sm text-body">
+                                <p>Import your custom code via the ModelOp UI. Navigate to <strong>Monitors &gt; Add Monitor</strong> and select "Git".</p>
+                                <ul class="list-disc pl-5 mt-2 space-y-1 text-xs">
+                                    <li>Provide the Repository URL and target Branch.</li>
+                                    <li>Assign an Access Group to control viewing permissions.</li>
+                                    <li>The system automatically scans for the <code>metrics()</code> entry point.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item relative flex items-start gap-6 group cursor-pointer" onclick="window.toggleAccordion(this)">
+                        <div class="step-marker w-12 h-12 rounded-full bg-[var(--panel-bg)] border-[3px] border-[var(--border)] text-[var(--text-light)] flex items-center justify-center font-bold shrink-0 z-10 shadow-sm transition-colors">2</div>
+                        <div class="card p-6 w-full transition-all border-transparent">
+                            <div class="flex justify-between items-center">
+                                <h4 class="font-bold text-[17px] text-[var(--text-main)] flex items-center gap-2"><span class="material-symbols-outlined text-[var(--text-light)] text-[18px]">camera</span> Freeze a Snapshot</h4>
+                                <span class="material-symbols-outlined text-[var(--text-light)] transition-transform duration-300">chevron_right</span>
+                            </div>
+                            <div class="accordion-content text-sm text-body">
+                                <p>Snapshots create an immutable version of your monitor code linked to a specific commit.</p>
+                                <p class="mt-2 text-xs">This guarantees production stability, ensuring that subsequent commits to the Git branch don't silently alter or break actively scheduled tests.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item relative flex items-start gap-6 group cursor-pointer" onclick="window.toggleAccordion(this)">
+                        <div class="step-marker w-12 h-12 rounded-full bg-[var(--panel-bg)] border-[3px] border-[var(--border)] text-[var(--text-light)] flex items-center justify-center font-bold shrink-0 z-10 shadow-sm transition-colors">3</div>
+                        <div class="card p-6 w-full transition-all border-transparent">
+                            <div class="flex justify-between items-center">
+                                <h4 class="font-bold text-[17px] text-[var(--text-main)] flex items-center gap-2"><span class="material-symbols-outlined text-[var(--text-light)] text-[18px]">link</span> Map Data & Execute</h4>
+                                <span class="material-symbols-outlined text-[var(--text-light)] transition-transform duration-300">chevron_right</span>
+                            </div>
+                            <div class="accordion-content text-sm text-body">
+                                <p>Attach the monitor snapshot to your Business Model's "Monitoring" tab.</p>
+                                <ul class="list-disc pl-5 mt-2 space-y-1 text-xs">
+                                    <li>The UI will prompt you to map specific data assets as defined in your <code>required_assets.json</code>.</li>
+                                    <li>Click <strong>Play</strong> to spawn the Job and yield your metrics.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        // --- Single Global Source of Truth for State ---
+        window.isDarkMode = false;
+        window.isMenuOpen = false;
+        window.isSidebarMinimized = false;
+        window.currentTemplate = 'class'; 
+        window.currentMetricMarkdown = '';
+        window.tooltipTimeout = null;
+
+        // Viz Selection States
+        window.expandedNodeId = null;
+        window.selectedNodesErd = new Set();
+        window.selectedNodesAgentic = new Set();
+        window.selectedNodesPathway = new Set();
+
+        // --- Data Science Metrics Dictionary ---
+        window.metricData = {
+            'pii': { title: 'PII/PHI Disclosure Detection', desc: 'Flags when outputs contain personal identifiers.', formula: '', biz: 'Compares generated LLM outputs against known patterns (Ground Truth) to mitigate Regulatory Breach.', grc: 'Direct lens into privacy.', model: 'Indicates prompts are leaking sensitive data.' },
+            'prompt_template': { title: 'Prompt Template Verification', desc: 'Checks whether prompts follow approved templates.', formula: '', biz: 'Compares user-submitted prompt structures against corporate guidelines.', grc: 'Limits “shadow prompting”.', model: 'Ensures consistent prompts.' },
+            'rails': { title: 'Rails Compliance', desc: 'Tests whether responses obey your RAILs / policy rules.', formula: '', biz: 'Compares semantic intent against predefined corporate safety boundaries.', grc: 'Links AI behavior to standards.', model: 'Pinpoints where guardrails fail.' },
+            'sentiment': { title: 'Sentiment Analysis', desc: 'Measures emotional tone of responses.', formula: '', biz: 'Compares emotional polarity against acceptable standards.', grc: 'Guards against hostile communications.', model: 'Helps tune prompts.' },
+            'sbert': { title: 'SBERT Similarity', desc: 'Scores how close an answer’s meaning is to a reference answer.', formula: 'sim ≈ (A·B) ÷ (‖A‖·‖B‖)', biz: 'Compares vectorized semantic meaning against a ground-truth "gold standard".', grc: 'Shows if responses align with "good" examples.', model: 'Fast semantic check.' },
+            'cross_llm': { title: 'Cross‑LLM Validation', desc: 'Uses another tool to verify if answers are factual.', formula: '', biz: 'Compares claims against an evaluative judge model.', grc: 'Extra defense against hallucinations.', model: 'Practical way to spot wrong answers.' },
+            'pred_pos_disp': { title: 'Predicted Positive Disparity', desc: 'Compares positive‑prediction rates across groups.', formula: '∝ ‖P(ŷ=1│A) − P(ŷ=1│B)‖', biz: 'Compares favorable inferences between demographic groups.', grc: 'Direct fairness signal.', model: 'Shows where thresholds create unequal access.' },
+            'for_disp': { title: 'False Omission Rate Disparity', desc: 'Compares missed positives in “negative” decisions.', formula: 'FOR = FN ÷ (FN + TN)', biz: 'Compares missed ground truth risk across groups.', grc: 'Surfaces under‑treatment.', model: 'Helps avoid overlooking risk.' },
+            'fdr_disp': { title: 'FDR Disparity', desc: 'Compares how often positive predictions are wrong.', formula: 'FDR = FP ÷ (TP + FP)', biz: 'Compares incorrect positive predictions across groups.', grc: 'Shows false accusation bias.', model: 'Guides rebalancing.' },
+            'mae': { title: 'MAE', desc: 'Average size of prediction errors, ignoring direction.', formula: 'MAE = (1 ÷ n)·Σ‖ŷᵢ − yᵢ‖', biz: 'Compares magnitude against actual values to measure financial miss.', grc: 'Easy “average miss”.', model: 'Straightforward loss measure.' },
+            'rmse': { title: 'RMSE', desc: 'Error metric that penalizes large misses more strongly.', formula: 'RMSE = √[(1 ÷ n)·Σ(ŷᵢ − yᵢ)²]', biz: 'Compares squared differences to highlight tail risk.', grc: 'Highlights occasional big errors.', model: 'Sensitive to outliers.' },
+            'r2': { title: 'R‑Squared', desc: 'Share of outcome variance explained by the model.', formula: 'R² = 1 − (SS_res ÷ SS_tot)', biz: 'Compares captured variance against total variance.', grc: 'Explains outcome drivers.', model: 'Goodness‑of‑fit metric.' },
+            'gini': { title: 'Gini Coefficient', desc: 'Measures how well scores separate cases.', formula: 'Gini ≈ 2·AUC − 1', biz: 'Compares cumulative distribution against actual default occurrences.', grc: 'Familiar credit‑risk summary.', model: 'Go‑to ranking metric.' },
+            'cstat': { title: 'C‑Stat', desc: 'Probability that a higher‑risk gets a higher score.', formula: '', biz: 'Compares rank-ordering of predictions against observed outcomes.', grc: 'Intuitive indicator.', model: 'Standard in credit‑risk.' },
+            'rank_break': { title: 'Rank‑Order Break Analysis', desc: 'Checks that higher score bands correspond to higher risk.', formula: '', biz: 'Compares progression of score buckets against actual default rates.', grc: 'Detects scorecard behavioral shifts.', model: 'Flags bucket ordering flips.' },
+            'accuracy': { title: 'Accuracy', desc: 'Percent of predictions that are simply correct.', formula: 'Accuracy = (TP + TN) ÷ (TP + TN + FP + FN)', biz: 'Compares correct inferences against total volume.', grc: 'Fast, intuitive check.', model: 'Baseline score.' },
+            'auc': { title: 'AUC–ROC', desc: 'Summarizes model separation across thresholds.', formula: '', biz: 'Compares rank-order capability against random guess.', grc: 'Risk vs non‑risk ranking.', model: 'Robust imbalanced data metric.' },
+            'precision': { title: 'Precision', desc: 'Of positive predictions, how many were true?', formula: 'Precision = TP ÷ (TP + FP)', biz: 'Compares true positive outcomes against positive predictions.', grc: 'Model trust factor.', model: 'Key for false alarm cost.' },
+            'recall': { title: 'Recall', desc: 'Of all real positives, how many caught?', formula: 'Recall = TP ÷ (TP + FN)', biz: 'Compares captured true positives against actual ground truth.', grc: 'Missed risk/opportunity.', model: 'Critical for dangerous misses.' },
+            'f1': { title: 'F1‑Score', desc: 'Single number balancing precision and recall.', formula: 'F1 = 2·(P·R) ÷ (P + R)', biz: 'Compares harmonic mean against theoretical perfection.', grc: 'Balanced quality view.', model: 'Trade-off management.' },
+            'cm': { title: 'Confusion Matrix', desc: 'Breaks results into TP, FP, TN, FN.', formula: '', biz: 'Compares discrete counts against exact ground truth.', grc: 'Trade‑offs visible.', model: 'Raw counts derivation.' },
+            'ks': { title: 'KS Test', desc: 'Checks if data distribution looks different.', formula: 'KS ≈ max‖F₀(x) − F₁(x)‖', biz: 'Compares production inputs against training baseline.', grc: 'Flags quiet shifts.', model: 'Early warning for retraining.' },
+            'epps': { title: 'Epps–Singleton', desc: 'Test for “same vs different” distributions.', formula: '', biz: 'Compares recent batches against expected patterns.', grc: 'Adds confidence to alerts.', model: 'Second opinion drift check.' },
+            'jsd': { title: 'Jensen–Shannon', desc: 'Symmetric distance between distributions.', formula: 'JSD(P‖Q) = ½·KL(P‖M) + ½·KL(Q‖M)', biz: 'Compares current features against reference to quantify staleness.', grc: 'Simple drift score.', model: 'Compact tracking number.' },
+            'kl': { title: 'Kullback–Leibler', desc: 'Measures "surprise" of new data.', formula: 'KL(P‖Q) = ΣPᵢ·log(Pᵢ ÷ Qᵢ)', biz: 'Compares likelihood under original assumptions vs reality.', grc: 'Quantifies scenario moves.', model: 'Checks model assumptions.' }
+        };
+
+        // --- Core UI Interactions ---
+        window.toggleSidebarSize = function() {
+            window.isSidebarMinimized = !window.isSidebarMinimized;
+            const sb = document.getElementById('sidebar');
+            const icon = document.getElementById('sidebar-icon');
+            if (window.isSidebarMinimized) {
+                sb.classList.replace('sidebar-expanded', 'sidebar-minimized');
+                icon.innerText = 'keyboard_double_arrow_right';
+            } else {
+                sb.classList.replace('sidebar-minimized', 'sidebar-expanded');
+                icon.innerText = 'keyboard_double_arrow_left';
+            }
+            setTimeout(() => {
+                if(window.capChartObj) window.capChartObj.resize();
+            }, 310);
+        };
+
+        window.switchTab = function(btn, tabId) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+            const target = document.getElementById(tabId);
+            if (target) target.classList.add('active');
+
+            if(tabId === 'architecture') {
+                setTimeout(() => {
+                    window.renderERD();
+                    if(!document.getElementById('arch-agentic-container').classList.contains('hidden')) {
+                        window.renderERDAgentic();
+                    }
+                }, 50);
+            }
+            if(tabId === 'pathway') setTimeout(window.renderPathwayERD, 50);
+            
+            if(tabId !== 'catalog') {
+                const copyContainer = document.getElementById('quick-copy-container');
+                copyContainer.classList.remove('opacity-100');
+                copyContainer.classList.add('opacity-0');
+                setTimeout(() => { copyContainer.classList.add('hidden'); }, 300);
+            }
+            if(window.isMenuOpen) window.toggleMobileMenu();
+        };
+
+        window.toggleMobileMenu = function() {
+            window.isMenuOpen = !window.isMenuOpen;
+            const sb = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            if(window.isMenuOpen) {
+                sb.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sb.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        };
+
+        window.toggleTheme = function() {
+            window.isDarkMode = !window.isDarkMode;
+            document.body.classList.toggle('dark-mode', window.isDarkMode);
+            const iconName = window.isDarkMode ? 'dark_mode' : 'light_mode';
+            document.getElementById('theme-icon').innerText = iconName;
+            document.getElementById('theme-icon-mobile').innerText = iconName;
+            
+            window.initChart(); 
+            if (document.getElementById('architecture').classList.contains('active')) {
+                window.renderERD(); 
+                if(!document.getElementById('arch-agentic-container').classList.contains('hidden')) window.renderERDAgentic();
+            }
+            if (document.getElementById('pathway').classList.contains('active')) window.renderPathwayERD();
+        };
+
+        window.toggleAccordion = function(element) {
+            document.querySelectorAll('.accordion-item').forEach(item => {
+                if (item !== element) {
+                    item.classList.remove('active');
+                    item.querySelector('.step-marker').classList.replace('border-[var(--primary)]', 'border-[var(--border)]');
+                    item.querySelector('.step-marker').classList.replace('text-[var(--primary)]', 'text-[var(--text-light)]');
+                    item.querySelector('.card').classList.add('border-transparent');
+                    const icon = item.querySelector('.material-symbols-outlined.transition-transform');
+                    icon.innerText = 'chevron_right';
+                    icon.classList.remove('rotate-90');
+                }
+            });
+            const isActive = element.classList.contains('active');
+            if (!isActive) {
+                element.classList.add('active');
+                element.querySelector('.step-marker').classList.replace('border-[var(--border)]', 'border-[var(--primary)]');
+                element.querySelector('.step-marker').classList.replace('text-[var(--text-light)]', 'text-[var(--primary)]');
+                element.querySelector('.card').classList.remove('border-transparent');
+                const icon = element.querySelector('.material-symbols-outlined.transition-transform');
+                icon.innerText = 'expand_more';
+            }
+        };
+
+        window.showToast = function(message, type = "success") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.innerHTML = `<span class="material-symbols-outlined">${type === 'success' ? 'check_circle' : 'error'}</span> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        };
+
+        // --- Slide Export Engine (HTML2Canvas) ---
+        window.generateSlideContentFromNodes = function(selectedSet, detailsMap, defaultTitle, defaultDesc, containerSelector) {
+            if (selectedSet.size === 0) {
+                const visibleNodeElems = document.querySelectorAll(`${containerSelector} .node`);
+                const visibleIds = Array.from(visibleNodeElems).map(el => el.getAttribute('id'));
+                
+                let html = `<div style="margin-bottom:15px; color: ${window.isDarkMode ? '#e5e7eb' : '#1e293b'};"><b>${defaultTitle}</b><br><span style="color: ${window.isDarkMode ? '#9ca3af' : '#475569'};">${defaultDesc}</span></div><div style="font-size:12px; display:flex; flex-direction:column; gap:10px; max-height:450px; padding-right:10px; overflow-y:auto;">`;
+                
+                visibleIds.forEach(id => {
+                    const val = detailsMap[id];
+                    if (val) {
+                        html += `<div><b style="color:#00a962; font-size:13px;">${val.title}</b><br><span style="color: ${window.isDarkMode ? '#9ca3af' : '#475569'};">${val.text}</span></div>`;
+                    }
+                });
+                
+                html += `</div>`;
+                return { title: defaultTitle, content: html };
+            } else {
+                let html = `<div style="display:flex; flex-direction:column; gap:15px; overflow-y:auto; max-height:450px; padding-right:10px;">`;
+                selectedSet.forEach(id => {
+                    const val = detailsMap[id];
+                    if(val) html += `<div><b style="color:#00a962; font-size:16px;">${val.title}</b><br><span style="font-size:14px; color: ${window.isDarkMode ? '#9ca3af' : '#475569'};">${val.text}</span><br><code style="font-size:11px; color:#94a3b8; background:rgba(128,128,128,0.15); padding:2px 4px; border-radius:4px; margin-top:4px; display:inline-block;">${val.sys}</code></div>`;
+                });
+                html += `</div>`;
+                return { title: selectedSet.size > 1 ? 'Selected Components' : detailsMap[Array.from(selectedSet)[0]].title, content: html };
+            }
+        };
+
+        window.exportCurrentSlide = function() {
+            const stagingArea = document.getElementById('slide-staging-area');
+            const insetTitle = document.getElementById('slide-inset-title');
+            const insetContent = document.getElementById('slide-inset-content');
+            const visualArea = document.getElementById('slide-visual');
+            
+            // Sync Theme Colors to Staging Area explicitly
+            if (window.isDarkMode) {
+                stagingArea.style.background = '#141414';
+                stagingArea.style.color = '#e5e7eb';
+                document.getElementById('slide-header').style.borderBottomColor = '#006630';
+                document.getElementById('slide-title').style.color = '#00a962';
+                document.getElementById('slide-subtitle').style.color = '#9ca3af';
+                document.getElementById('slide-inset').style.background = '#1e1e1e';
+                document.getElementById('slide-inset').style.borderColor = '#2e2e2e';
+                document.getElementById('slide-inset').style.boxShadow = '0 4px 6px rgba(0,0,0,0.5)';
+                insetTitle.style.color = '#e5e7eb';
+                visualArea.style.background = '#141414';
+                document.getElementById('slide-footer').style.color = '#64748b';
+            } else {
+                stagingArea.style.background = '#ffffff';
+                stagingArea.style.color = '#1e293b';
+                document.getElementById('slide-header').style.borderBottomColor = '#006630';
+                document.getElementById('slide-title').style.color = '#006630';
+                document.getElementById('slide-subtitle').style.color = '#64748b';
+                document.getElementById('slide-inset').style.background = '#f8fafc';
+                document.getElementById('slide-inset').style.borderColor = '#e2e8f0';
+                document.getElementById('slide-inset').style.boxShadow = '0 4px 6px rgba(0,0,0,0.05)';
+                insetTitle.style.color = '#1e293b';
+                visualArea.style.background = '#ffffff';
+                document.getElementById('slide-footer').style.color = '#94a3b8';
+            }
+
+            const activeTab = document.querySelector('.page-section.active').id;
+            visualArea.innerHTML = '';
+            let targetSVG = null;
+            
+            if (activeTab === 'dashboard') {
+                insetTitle.innerText = "Value Proposition";
+                insetContent.innerHTML = `<span style="color: ${window.isDarkMode ? '#9ca3af' : '#475569'};">Enterprise requirements demand unique calculations beyond standard OOTB metrics. ModelOp enables custom python monitors to integrate natively into enterprise-grade governance platforms. This ensures 'evidence' is always captured in an auditable format for risk and compliance.</span>`;
+                const img = new Image();
+                img.src = document.getElementById('capChart').toDataURL('image/png');
+                visualArea.appendChild(img);
+                window.triggerHtml2Canvas();
+            } 
+            else if (activeTab === 'catalog') {
+                insetTitle.innerText = document.getElementById('tt-metric-title').innerText || "Metrics Catalog";
+                insetContent.innerHTML = `<span style="color: ${window.isDarkMode ? '#9ca3af' : '#475569'};">${document.getElementById('tt-metric-desc').innerHTML || "ModelOp provides comprehensive governance tracking across Classification, Regression, Fairness, and GenAI LLM validations."}</span>`;
+                if (document.getElementById('tt-metric-formula') && document.getElementById('tt-metric-formula').innerText) {
+                    insetContent.innerHTML += `<br><br><code style="color:#00a962; font-weight:bold;">${document.getElementById('tt-metric-formula').innerText}</code>`;
+                }
+                const sysContent = document.getElementById('tt-metric-biz') ? document.getElementById('tt-metric-biz').innerText : "";
+                if(sysContent) insetContent.innerHTML += `<br><br><b style="color:${window.isDarkMode ? '#e5e7eb' : '#1e293b'};">Business Impact:</b> <span style="color: ${window.isDarkMode ? '#9ca3af' : '#475569'};">${sysContent}</span>`;
+                
+                visualArea.innerHTML = `<div style="text-align:center; color:var(--text-light); font-size:24px; border: 2px dashed var(--border); padding: 40px; border-radius: 12px; height:100%; display:flex; flex-direction:column; justify-content:center;"><b>ModelOp Center v3.4</b><br>Governing Enterprise AI Data Science</div>`;
+                window.triggerHtml2Canvas();
+            }
+            else if (activeTab === 'pathway') {
+                const info = window.generateSlideContentFromNodes(window.selectedNodesPathway, window.pathwayDetails, "Selection Pathway", "Selecting the right AI monitor requires mapping the technical model type and data characteristics directly to enterprise business outcomes.", "#pathway-canvas");
+                insetTitle.innerText = info.title;
+                insetContent.innerHTML = info.content; 
+                targetSVG = document.querySelector('#pathway-canvas svg');
+                window.processSVGForSlide(targetSVG, visualArea);
+            }
+            else if (activeTab === 'architecture') {
+                if (!document.getElementById('arch-standard-container').classList.contains('hidden')) {
+                    const info = window.generateSlideContentFromNodes(window.selectedNodesErd, window.erdDetails, "Execution Architecture", "Orchestration combines Business Model context, Monitor assets, and Data references.", "#erd-canvas");
+                    insetTitle.innerText = info.title;
+                    insetContent.innerHTML = info.content;
+                    targetSVG = document.querySelector('#erd-canvas svg');
+                } else {
+                    const info = window.generateSlideContentFromNodes(window.selectedNodesAgentic, window.agenticErdDetails, "Agentic Architecture", "Orchestration of Foundation Models, Tooling, and continuous telemetry monitoring.", "#erd-agentic-canvas");
+                    insetTitle.innerText = info.title;
+                    insetContent.innerHTML = info.content;
+                    targetSVG = document.querySelector('#erd-agentic-canvas svg');
+                }
+                window.processSVGForSlide(targetSVG, visualArea);
+            }
+            else if (activeTab === 'artifacts') {
+                insetTitle.innerText = "Monitor Artifacts";
+                insetContent.innerHTML = `<span style="color: ${window.isDarkMode ? '#9ca3af' : '#475569'};">A custom monitor is defined by specific files in a Git repository, including primary source code, schema requirements, and metadata classifications.</span>`;
+                const codeText = document.getElementById('art-code').innerText;
+                const bgCol = window.isDarkMode ? '#141414' : '#1a1a1a'; 
+                visualArea.innerHTML = `<pre style="background:${bgCol}; color:#e5e7eb; padding:20px; border-radius:8px; font-family:monospace; font-size:13px; width:100%; height:100%; white-space:pre-wrap; overflow:hidden; border: 1px solid ${window.isDarkMode ? '#2e2e2e' : '#333333'}; box-sizing: border-box;">${codeText.substring(0, 1000)}${codeText.length > 1000 ? '\n... (truncated for slide)' : ''}</pre>`;
+                window.triggerHtml2Canvas();
+            }
+            else if (activeTab === 'deployment') {
+                insetTitle.innerText = "Deployment Workflow";
+                let listHtml = "<div style='display:flex; flex-direction:column; gap:30px; margin-top:20px;'>";
+                document.querySelectorAll('#deployment .accordion-item').forEach((item, index) => {
+                    const titleRaw = item.querySelector('h4').innerText;
+                    const title = titleRaw.replace(/expand_more|chevron_right/g, '').trim();
+                    const desc = item.querySelector('.accordion-content p').innerText;
+                    const txtColor = window.isDarkMode ? '#e5e7eb' : '#1e293b';
+                    const detailColor = window.isDarkMode ? '#9ca3af' : '#64748b';
+                    listHtml += `<div style="display:flex; gap:20px; align-items:flex-start;">
+                        <div style="width:40px; height:40px; border-radius:50%; background:#006630; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:20px; flex-shrink:0;">${index+1}</div>
+                        <div><h4 style="margin:0 0 5px 0; color:${txtColor}; font-size:20px;">${title}</h4><p style="margin:0; color:${detailColor}; font-size:15px;">${desc}</p></div>
+                    </div>`;
+                });
+                listHtml += "</div>";
+                
+                visualArea.innerHTML = listHtml;
+                insetContent.innerHTML = "<div style='text-align:center; padding:40px;'><img src='https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/precision_manufacturing/default/48px.svg' width='80' style='filter: invert(29%) sepia(85%) saturate(1516%) hue-rotate(124deg) brightness(97%) contrast(105%); margin-bottom:20px;'><br><b style='font-size:24px; color:#006630;'>Automated Integration</b><br><br><span style='color:#64748b'>From local IDE directly into Enterprise Production.</span></div>";
+                window.triggerHtml2Canvas();
+            }
+        };
+
+        window.processSVGForSlide = function(svgElement, visualArea) {
+            if (!svgElement) {
+                window.triggerHtml2Canvas();
+                return;
+            }
+            
+            const clonedSvg = svgElement.cloneNode(true);
+            
+            // Clean up dynamic styles applied by pan/zoom
+            clonedSvg.style.transform = ''; 
+            clonedSvg.style.width = '100%';
+            clonedSvg.style.height = '100%';
+            clonedSvg.style.maxWidth = '100%';
+            clonedSvg.style.maxHeight = '100%';
+            
+            // Remove hardcoded width/height attributes so viewBox scales it inside the flex container correctly
+            clonedSvg.removeAttribute('width');
+            clonedSvg.removeAttribute('height');
+            
+            // Clean text/stroke colors for slide environment mapping
+            if(window.isDarkMode) {
+                clonedSvg.querySelectorAll('text').forEach(t => {
+                    if(t.getAttribute('fill') === '#ffffff' || t.getAttribute('fill') === '#f8fafc' || t.getAttribute('fill') === '#000000') {
+                        t.setAttribute('fill', '#e5e7eb');
+                    }
+                });
+                clonedSvg.querySelectorAll('path, polygon, ellipse').forEach(p => {
+                    if(p.getAttribute('stroke') === '#64748b' || p.getAttribute('stroke') === '#000000') {
+                        p.setAttribute('stroke', '#94a3b8');
+                    }
+                });
+            }
+
+            // Directly append the raw cloned <svg> DOM node into the staging area
+            visualArea.innerHTML = '';
+            visualArea.appendChild(clonedSvg);
+            
+            // Wait for the layout to paint, and then trigger the canvas capture natively
+            setTimeout(() => {
+                window.triggerHtml2Canvas();
+            }, 500);
+        };
+
+        window.triggerHtml2Canvas = function() {
+            window.showToast("Generating slide...");
+            requestAnimationFrame(() => {
+                html2canvas(document.getElementById('slide-staging-area'), {
+                    scale: 2,
+                    backgroundColor: window.isDarkMode ? '#141414' : '#ffffff',
+                    logging: false,
+                    useCORS: true
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'ModelOp_Slide.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    window.showToast("Slide downloaded successfully!");
+                }).catch(err => {
+                    console.error('Slide generation error:', err);
+                    window.showToast("Failed to generate slide.", "error");
+                });
+            });
+        };
+
+        // --- Interaction Logic: Tooltips, Zoom, Fullscreen ---
+        window.activateMetric = function(e, id) {
+            const data = window.metricData[id];
+            if(!data) return;
+            if(window.tooltipTimeout) clearTimeout(window.tooltipTimeout);
+
+            document.querySelectorAll('.metric-btn').forEach(btn => btn.classList.remove('active-metric'));
+            e.target.classList.add('active-metric');
+
+            document.getElementById('tt-metric-title').innerHTML = data.title;
+            document.getElementById('tt-metric-desc').innerHTML = data.desc;
+            
+            const formContainer = document.getElementById('tt-metric-formula-container');
+            if (data.formula) {
+                document.getElementById('tt-metric-formula').innerHTML = data.formula;
+                formContainer.classList.remove('hidden');
+            } else { formContainer.classList.add('hidden'); }
+
+            document.getElementById('tt-metric-biz').innerHTML = data.biz;
+            document.getElementById('tt-metric-grc').innerHTML = data.grc;
+            document.getElementById('tt-metric-model').innerHTML = data.model;
+
+            const tt = document.getElementById('metric-floating-tooltip');
+            tt.style.display = 'block';
+            setTimeout(() => tt.style.opacity = '1', 10);
+
+            const rect = e.target.getBoundingClientRect();
+            let top = rect.top - tt.offsetHeight - 15;
+            let left = rect.left + (rect.width / 2) - (tt.offsetWidth / 2);
+            if(top < 10) top = rect.bottom + 15;
+            if(left < 10) left = 10;
+            if(left + tt.offsetWidth > window.innerWidth) left = window.innerWidth - tt.offsetWidth - 10;
+            tt.style.top = top + 'px';
+            tt.style.left = left + 'px';
+
+            let renderedHTML = `<h3 class="text-base font-bold text-[var(--primary)] mb-2">${data.title}</h3><p class="mb-2 leading-relaxed text-[var(--text-main)]">${data.desc}</p>`;
+            if (data.formula) renderedHTML += `<div class="mb-4"><code class="metric-formula">${data.formula}</code></div>`;
+            else renderedHTML += `<div class="mb-4"></div>`;
+            renderedHTML += `<ul class="space-y-2 bg-[var(--panel-light)] p-4 rounded-lg border border-[var(--border)]">
+                <li><strong class="text-[var(--text-main)]">Business Context:</strong> <span class="text-[var(--text-light)]">${data.biz}</span></li>
+                <li><strong class="text-[var(--text-main)]">GRC Leaders:</strong> <span class="text-[var(--text-light)]">${data.grc}</span></li>
+                <li><strong class="text-[var(--text-main)]">Model Owners:</strong> <span class="text-[var(--text-light)]">${data.model}</span></li></ul>`;
+            document.getElementById('quick-copy-rendered').innerHTML = renderedHTML;
+
+            let mdString = `### ${data.title}\n\n${data.desc.replace(/<br\s*[\/]?>/gi, '\n')}\n\n`;
+            if (data.formula) mdString += `\`${data.formula}\`\n\n`;
+            mdString += `- **Business Context:** ${data.biz}\n- **GRC Leaders:** ${data.grc}\n- **Model Owners:** ${data.model}`;
+            window.currentMetricMarkdown = mdString;
+            
+            const copyContainer = document.getElementById('quick-copy-container');
+            copyContainer.classList.remove('hidden');
+            void copyContainer.offsetWidth;
+            copyContainer.classList.remove('opacity-0');
+            copyContainer.classList.add('opacity-100');
+            const btn = document.querySelector('#quick-copy-container button .copy-text');
+            if(btn) btn.innerText = 'Copy Raw Markdown';
+        };
+
+        window.hideMetricTooltip = function() {
+            const tt = document.getElementById('metric-floating-tooltip');
+            tt.style.opacity = '0';
+            window.tooltipTimeout = setTimeout(() => { tt.style.display = 'none'; }, 200);
+        };
+        document.getElementById('main-content-scroll').addEventListener('scroll', window.hideMetricTooltip);
+
+        window.copyMetricMarkdown = function(btnElement) {
+            if(!window.currentMetricMarkdown) return;
+            
+            const textArea = document.createElement("textarea");
+            textArea.value = window.currentMetricMarkdown;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                btnElement.querySelector('.copy-icon').innerText = 'check';
+                btnElement.querySelector('.copy-text').innerText = 'Copied!';
+                window.showToast("Raw Markdown copied to clipboard!");
+                setTimeout(() => {
+                    btnElement.querySelector('.copy-icon').innerText = 'content_copy';
+                    btnElement.querySelector('.copy-text').innerText = 'Copy Raw Markdown';
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+                window.showToast("Failed to copy Markdown.", "error");
+            }
+            document.body.removeChild(textArea);
+        };
+
+        window.stateMaps = new WeakMap();
+        window.setupZoomPan = function(svgElement) {
+            if (!svgElement) return;
+            const wrapper = svgElement.parentElement;
+            
+            let state = { scale: 1, translateX: 0, translateY: 0, isDragging: false, startX: 0, startY: 0 };
+            window.stateMaps.set(wrapper, state);
+
+            svgElement.style.transformOrigin = 'center center';
+            svgElement.style.transition = 'transform 0.05s linear';
+
+            const updateTransform = () => { 
+                svgElement.style.transform = `translate(${state.translateX}px, ${state.translateY}px) scale(${state.scale})`; 
+            };
+
+            wrapper.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                state.scale = Math.min(Math.max(.125, state.scale * (e.deltaY > 0 ? 0.9 : 1.1)), 4);
+                updateTransform();
+            });
+            wrapper.addEventListener('mousedown', (e) => {
+                if(e.target.closest('.node')) return;
+                state.isDragging = true;
+                state.startX = e.clientX - state.translateX;
+                state.startY = e.clientY - state.translateY;
+            });
+            window.addEventListener('mousemove', (e) => {
+                if (!state.isDragging) return;
+                state.translateX = e.clientX - state.startX;
+                state.translateY = e.clientY - state.startY;
+                updateTransform();
+            });
+            window.addEventListener('mouseup', () => { state.isDragging = false; });
+            window.addEventListener('mouseleave', () => { state.isDragging = false; });
+        };
+
+        window.toggleFullscreen = function(containerId, ...controlsIds) {
+            const container = document.getElementById(containerId);
+            const btn = container.querySelector('button .material-symbols-outlined');
+            const isFS = container.classList.contains('viz-fullscreen');
+            const globalModal = document.getElementById('fs-config-modal');
+            const modalContent = document.getElementById('fs-config-content');
+
+            if (!isFS) {
+                container.classList.add('viz-fullscreen');
+                btn.innerText = 'fullscreen_exit';
+                modalContent.innerHTML = '';
+                
+                controlsIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        const placeholder = document.createElement('div');
+                        placeholder.id = id + '-placeholder';
+                        placeholder.style.display = 'none';
+                        el.parentNode.insertBefore(placeholder, el);
+                        
+                        el.dataset.origClasses = el.className;
+                        el.className = 'flex flex-col gap-4 w-full';
+                        
+                        modalContent.appendChild(el);
+                        
+                        if (controlsIds.length > 1 && id !== controlsIds[controlsIds.length - 1]) {
+                            const hr = document.createElement('hr');
+                            hr.className = 'my-2 border-[var(--border)] w-full';
+                            hr.id = id + '-hr';
+                            modalContent.appendChild(hr);
+                        }
+                    }
+                });
+                globalModal.classList.add('active');
+            } else {
+                container.classList.remove('viz-fullscreen');
+                btn.innerText = 'fullscreen';
+                
+                controlsIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    const placeholder = document.getElementById(id + '-placeholder');
+                    const hr = document.getElementById(id + '-hr');
+                    
+                    if (hr) hr.remove();
+                    
+                    if (el && placeholder) {
+                        if (el.dataset.origClasses) el.className = el.dataset.origClasses;
+                        placeholder.parentNode.insertBefore(el, placeholder);
+                        placeholder.remove();
+                    }
+                });
+                
+                globalModal.classList.remove('active');
+                globalModal.classList.remove('minimized');
+                
+                const activeTab = document.querySelector('.page-section.active').id;
+                if (activeTab === 'pathway') window.renderPathwayERD();
+                else if (activeTab === 'architecture') {
+                    if (!document.getElementById('arch-standard-container').classList.contains('hidden')) window.renderERD();
+                    else window.renderERDAgentic();
+                }
+            }
+        };
+
+        window.updateInspectorMulti = function(selectedSet, detailsMap, titleId, contentId, sysId) {
+            let combinedTitle = [], combinedContent = [], combinedSys = [];
+            selectedSet.forEach(selId => {
+                if (detailsMap[selId]) {
+                    combinedTitle.push(detailsMap[selId].title);
+                    combinedContent.push(`<div class="mb-3 border-b border-[var(--border)] pb-2 last:border-0"><b class="text-[var(--primary)] text-[15px]">${detailsMap[selId].title}</b><br><span class="text-[13px] leading-relaxed">${detailsMap[selId].text}</span></div>`);
+                    combinedSys.push(detailsMap[selId].sys);
+                }
+            });
+            if (combinedTitle.length > 0) {
+                document.getElementById(titleId).innerText = combinedTitle.length > 1 ? 'Multiple Components Selected' : combinedTitle[0];
+                document.getElementById(contentId).innerHTML = combinedContent.join('');
+                if (document.getElementById(sysId)) document.getElementById(sysId).innerText = combinedSys.join('\n');
+            }
+        };
+
+        window.applyIndustryTemplate = function(industry, section) {
+            const recElId = section === 'pathway' ? 'pathway-industry-rec' : 'arch-industry-rec';
+            const el = document.getElementById(recElId);
+            
+            // Reset filters logic
+            document.getElementById('cb-class').checked = false;
+            document.getElementById('cb-reg').checked = false;
+            document.getElementById('cb-llm').checked = false;
+
+            if (!industry) { 
+                if(el) el.classList.add('hidden'); 
+                document.getElementById('cb-class').checked = true;
+                document.getElementById('cb-reg').checked = true;
+                document.getElementById('cb-llm').checked = true;
+                window.renderPathwayERD();
+                return; 
+            }
+            
+            if(el) el.classList.remove('hidden');
+            if (industry === 'banking') {
+                if(el) el.innerHTML = "<b>Banking Presets:</b> High scrutiny. Requires Classification Performance + Disparity Bias monitoring.";
+                document.getElementById('cb-class').checked = true;
+            }
+            else if (industry === 'credit') {
+                if(el) el.innerHTML = "<b>Credit Presets:</b> Regulatory focus. Requires Regression Performance (Gini) + Data/Concept Drift.";
+                document.getElementById('cb-reg').checked = true;
+                document.getElementById('cb-class').checked = true;
+            }
+            else if (industry === 'healthcare') {
+                if(el) el.innerHTML = "<b>Healthcare Presets:</b> Privacy focus. Requires GenAI PII/PHI validation + Strict Rails Compliance.";
+                document.getElementById('cb-llm').checked = true;
+            }
+            else if (industry === 'causality') {
+                if(el) el.innerHTML = "<b>Causality Presets:</b> ROI focus. Requires A/B group metrics + Drift evaluation over time.";
+                document.getElementById('cb-class').checked = true;
+                document.getElementById('cb-reg').checked = true;
+            }
+            
+            window.renderPathwayERD();
+        };
+
+        // --- Viz.js Renderers & Detail Maps ---
+        window.erdDetails = {
+            'UC': { title: 'Use Case', text: 'The overarching business initiative. It ties multiple models and monitors together under a single governance structure.', sys: 'modelop.usecase' },
+            'BM': { title: 'Business Model Snapshot', text: 'An immutable version of the model implementation. Monitors are attached directly to this snapshot. Click to view Schema and Data configurations.', sys: 'modelop.model.snapshot' },
+            'MT': { title: 'Monitor / Test', text: 'The custom metrics.py and configuration JSONs imported from your Git repository. Click to view granular code components.', sys: 'modelop.monitor' },
+            'Job': { title: 'ModelOp Job', text: 'The orchestrator. It combines the Business Model context, Monitor assets, and Data references to dispatch instructions.', sys: 'modelop.job.metrics' },
+            'RT': { title: 'Monitoring Runtime', text: 'The V3.4 Java-based compute engine. It pulls the assets, hydrates the dataframes, and executes the Python.', sys: 'modelop.engine.java' },
+            'DS': { title: 'Data Systems', text: 'The external databases, S3 buckets, or flat files where the baseline and sample data reside.', sys: 'Enterprise Infrastructure' },
+            'MTR': { title: 'Model Test Result', text: 'The JSON artifact yielded by the metrics function. It is permanently attached to the Business Model for audit.', sys: 'modelop.test.result' },
+            'MT_PY': { title: 'custom_metrics.py', text: 'The primary source code containing the metrics() function that is executed.', sys: 'modelop.monitor.source' },
+            'MT_REQ': { title: 'required_assets.json', text: 'Defines the inputs expected by this monitor (e.g., baseline and sample data mappings).', sys: 'modelop.monitor.assets' },
+            'MT_META': { title: 'metadata.json', text: 'Informs ModelOp Center that this asset functions specifically as a MODEL_MONITORING_MODEL.', sys: 'modelop.monitor.metadata' },
+            'MT_MOCK': { title: 'example_job.json', text: 'A local development file simulating the ModelOp Job payload.', sys: 'Local Dev Asset' },
+            'MT_MD': { title: 'readme.md', text: 'Documentation describing the monitor.', sys: 'modelop.monitor.docs' },
+            'BM_SCH': { title: 'Model Schema (Avro)', text: 'Defines the specific fields in a models dataset, including the datatype and role (e.g., predictor, label, score).', sys: 'modelop.schema' },
+            'BM_REF': { title: 'Data Set References', text: 'Pointers to where the training/baseline and production comparator data physically resides.', sys: 'modelop.data.reference' }
+        };
+
+        window.agenticErdDetails = {
+            'AG_UC': { title: 'Agentic Use Case', text: 'The overarching business initiatives and workflows delegated to the autonomous agent.', sys: 'modelop.usecase.agent' },
+            'AG_ORCH': { title: 'Agent Orchestrator', text: 'The core logic managing planning, tool routing, and multi-step execution paths.', sys: 'modelop.agent.orchestrator' },
+            'AG_A2A': { title: 'A2A Ensemble Pattern', text: 'Agent-to-Agent architecture composing multiple specialized child agents to solve complex tasks.', sys: 'modelop.agent.ensemble' },
+            'AG_FM': { title: 'Foundation & Vendor LLMs', text: 'The core generative models (e.g., OpenAI, Anthropic, AWS Bedrock) powering reasoning.', sys: 'modelop.llm.foundation' },
+            'AG_TOOLS': { title: 'MCP Server & Tools', text: 'External integrations, RAG vector databases, and business APIs accessible by the agent.', sys: 'modelop.agent.mcp' },
+            'AG_GRD': { title: 'Guardrail Components', text: 'Safety classifiers, policy compliance checks, and input/output validation layers.', sys: 'modelop.agent.guardrail' },
+            'AG_MON': { title: 'LLM Monitoring Package', text: 'Continuous evaluation of prompts, completions, toxicity, hallucinations, latency, and cost.', sys: 'modelop.monitor.llm' }
+        };
+
+        window.pathwayDetails = {
+            'PW_Start': { title: 'Enterprise AI Model', text: 'The root of your AI initiative. Proper categorization ensures appropriate governance mapping.', sys: 'modelop.model.registration' },
+            'PW_Class': { title: 'Classification Models', text: 'Predicting discrete categories (e.g., Approve/Deny, Fraud/Not Fraud). Requires robust precision/recall tracking and bias testing.', sys: 'modelop.model.type' },
+            'PW_ClassPerfCheck': { title: 'Performance Needs', text: 'Does this classification model require statistical performance tracking?', sys: 'policy.check' },
+            'PW_ClassPerf': { title: 'Classification Performance', text: 'Monitors AUC, Accuracy, Precision, and Recall against expected baseline thresholds.', sys: 'modelop.monitor.performance' },
+            'PW_ClassBiasCheck': { title: 'Bias Check Required?', text: 'Are protected classes (Age, Gender, Race) present in the payload?', sys: 'policy.fairness' },
+            'PW_BiasCheckType': { title: 'Bias Analysis Routing', text: 'Determining the strictness of fairness testing based on regulations.', sys: 'policy.fairness.routing' },
+            'PW_BiasGroup': { title: 'Group Metrics Monitor', text: 'Evaluates basic predictive equality across protected groups.', sys: 'monitor.bias.group' },
+            'PW_BiasDisparity': { title: 'Disparity Metrics Monitor', text: 'Evaluates rigorous ratio tests (80% rule) for disparate impact.', sys: 'monitor.bias.disparity' },
+            'PW_BiasComp': { title: 'Comprehensive Fairness', text: 'Full suite of Aequitas-style fairness and bias testing.', sys: 'monitor.bias.full' },
+            'PW_ClassDriftCheck': { title: 'Drift Detection Required?', text: 'Does the operational environment shift over time?', sys: 'policy.drift' },
+            'PW_DataDriftType': { title: 'Data Drift Config', text: 'What level of input distribution tracking is needed?', sys: 'config.drift.data' },
+            'PW_ConceptDriftType': { title: 'Concept Drift Config', text: 'What level of target variable tracking is needed?', sys: 'config.drift.concept' },
+            'PW_BothDriftCheck': { title: 'Combined Drift Config', text: 'Routing for both data and concept drift checks.', sys: 'config.drift.both' },
+            'PW_DataDriftStat': { title: 'Statistical Data Drift', text: 'KS, JS Divergence, and Kullback-Leibler tests.', sys: 'monitor.drift.stat' },
+            'PW_ConceptDriftStat': { title: 'Statistical Concept Drift', text: 'Tests shifting relationships between inputs and outputs.', sys: 'monitor.drift.concept' },
+            'PW_DataDriftComp': { title: 'Comprehensive Data Drift', text: 'Full suite of distribution tests and summary statistics.', sys: 'monitor.drift.full' },
+            'PW_ConceptDriftComp': { title: 'Comprehensive Concept Drift', text: 'Full suite of relationship degradation tests.', sys: 'monitor.drift.full' },
+            'PW_ClassVolCheck': { title: 'Volumetric Checks?', text: 'Should we monitor payload sizes and basic descriptive stats?', sys: 'policy.volumetric' },
+            'PW_VolCount': { title: 'Record Count Monitor', text: 'Tracks daily/weekly payload sizes to detect pipeline failures.', sys: 'monitor.volumetric' },
+            'PW_ClassStabilityCheck': { title: 'Stability Checks?', text: 'Is Population Stability Index (PSI) required?', sys: 'policy.stability' },
+            'PW_StabilityMonitor': { title: 'PSI / CSI Monitor', text: 'Calculates Population and Characteristic Stability Indices.', sys: 'monitor.stability' },
+            'PW_ClassEnd': { title: 'Classification Complete', text: 'All required classification monitors have been staged.', sys: 'status.complete' },
+            
+            'PW_Reg': { title: 'Regression Models', text: 'Predicting continuous quantities (e.g., Loan Default Amounts, Pricing). Requires residual tracking and statistical diagnostics.', sys: 'modelop.model.type' },
+            'PW_RegPerfCheck': { title: 'Performance Needs', text: 'Does this model require error/variance tracking?', sys: 'policy.check' },
+            'PW_RegPerf': { title: 'Regression Performance', text: 'Monitors absolute/squared errors (MAE, RMSE, R²) to limit financial variance and tail risks.', sys: 'modelop.monitor.performance' },
+            'PW_RegDiagCheck': { title: 'Diagnostic Needs', text: 'Are deep statistical assumption tests required?', sys: 'policy.diagnostics' },
+            'PW_DiagType': { title: 'Diagnostic Routing', text: 'Selecting specific statistical tests.', sys: 'policy.diagnostics.routing' },
+            'PW_NormalityTest': { title: 'Normality Monitor', text: 'Tests if residuals follow a normal distribution (KS, Anderson-Darling).', sys: 'monitor.diag.normality' },
+            'PW_LinearityTest': { title: 'Linearity Monitor', text: 'Tests linear relationships between inputs and outputs.', sys: 'monitor.diag.linearity' },
+            'PW_HomoscedTest': { title: 'Homoscedasticity Monitor', text: 'Tests for constant variance of errors (Breusch-Pagan).', sys: 'monitor.diag.homoscedasticity' },
+            'PW_RegDriftCheck': { title: 'Drift Check Required?', text: 'Does the operational environment shift over time?', sys: 'policy.drift' },
+            'PW_RegVolCheck': { title: 'Volumetric Checks?', text: 'Should we monitor payload sizes?', sys: 'policy.volumetric' },
+            'PW_RegVolCount': { title: 'Record Count Monitor', text: 'Tracks payload sizes to detect pipeline failures.', sys: 'monitor.volumetric' },
+            'PW_RegEnd': { title: 'Regression Complete', text: 'All required regression monitors have been staged.', sys: 'status.complete' },
+            
+            'PW_LLM': { title: 'GenAI / LLMs', text: 'Open-ended generation models. Requires strict guardrails against hallucination, toxicity, and unauthorized disclosure.', sys: 'modelop.model.type' },
+            'PW_LLMTypeCheck': { title: 'Validation Scope', text: 'What level of LLM guardrails are required?', sys: 'policy.llm' },
+            'PW_LLMStd': { title: 'Standard NLP Tests', text: 'Monitors output sentiment, structural length, and flags PII/PHI disclosures.', sys: 'modelop.monitor.nlp' },
+            'PW_LLMFull': { title: 'Full LLM Suite', text: 'Adds Rails compliance, Hallucination checks, and Prompt injection defense.', sys: 'monitor.llm.full' },
+            'PW_NLPStd': { title: 'NLP Only Tests', text: 'Basic text analytics for non-generative NLP models.', sys: 'monitor.nlp.standard' },
+            'PW_LLMDriftCheck': { title: 'Semantic Drift?', text: 'Does the prompt distribution shift over time?', sys: 'policy.drift' },
+            'PW_LLMEnd': { title: 'LLM Selection Complete', text: 'All required GenAI monitors have been staged.', sys: 'status.complete' },
+            
+            'PW_MonitorEnd': { title: 'Selection Complete', text: 'Proceeding to ModelOp Center implementation.', sys: 'status.staging' },
+            'PW_MLCIntegration': { title: 'MLC Template Generation', text: 'Compiling the selected monitors into a Model Lifecycle (MLC) JSON template.', sys: 'modelop.mlc.compile' },
+            'PW_EndSuccess': { title: 'Deployed', text: 'The model and all associated monitors are successfully running in production.', sys: 'status.production' }
+        };
+
+        window.getDotTheme = function() {
+            return {
+                primaryHex: '#006630', nodeText: '#ffffff',
+                edgeColor: window.isDarkMode ? '#64748b' : '#94a3b8',
+                subNodeFill: window.isDarkMode ? '#334155' : '#f1f5f9',
+                subNodeText: window.isDarkMode ? '#f8fafc' : '#475569'
+            };
+        };
+
+        window.switchArchitecture = function(type) {
+            const stdBtn = document.getElementById('btn-arch-standard');
+            const agBtn = document.getElementById('btn-arch-agentic');
+            const stdCont = document.getElementById('arch-standard-container');
+            const agCont = document.getElementById('arch-agentic-container');
+
+            if (type === 'standard') {
+                stdBtn.className = "px-4 py-2 rounded-md text-sm font-semibold transition-all bg-[var(--primary)] text-white shadow-sm";
+                agBtn.className = "px-4 py-2 rounded-md text-sm font-semibold text-[var(--text-light)] hover:text-[var(--text-main)] transition-all";
+                stdCont.classList.remove('hidden'); agCont.classList.add('hidden');
+                stdCont.classList.add('flex'); agCont.classList.remove('flex');
+                window.renderERD();
+            } else {
+                agBtn.className = "px-4 py-2 rounded-md text-sm font-semibold transition-all bg-[var(--primary)] text-white shadow-sm";
+                stdBtn.className = "px-4 py-2 rounded-md text-sm font-semibold text-[var(--text-light)] hover:text-[var(--text-main)] transition-all";
+                stdCont.classList.add('hidden'); agCont.classList.remove('hidden');
+                stdCont.classList.remove('flex'); agCont.classList.add('flex');
+                window.renderERDAgentic();
+            }
+        };
+
+        window.renderERD = function() {
+            const viz = new Viz();
+            const t = window.getDotTheme();
+            let dotSrc = `
+                digraph G {
+                    bgcolor="transparent"; rankdir=TB; nodesep=0.5; ranksep=0.6; splines=ortho;
+                    node [fontname="Poppins", shape=box, style="filled, rounded", color="${t.primaryHex}", fontcolor="${t.nodeText}", width=2.2, height=0.6, fontsize=12];
+                    edge [fontname="Poppins", fontsize=10, color="${t.edgeColor}", fontcolor="${t.edgeColor}", penwidth=1.5];
+
+                    UC [label="Use Case", id="UC"];
+                    subgraph cluster_1 {
+                        peripheries=0; {rank=same; BM; MT;}
+            `;
+            if (window.expandedNodeId === 'BM') {
+                dotSrc += `
+                        BM [label="Business Model\\n(Snapshot)", id="BM"];
+                        BM_SCH [label="Schema (Avro)", id="BM_SCH", fillcolor="${t.subNodeFill}", fontcolor="${t.subNodeText}", color="${t.edgeColor}", width=1.8, height=0.4, fontsize=10];
+                        BM_REF [label="Data References", id="BM_REF", fillcolor="${t.subNodeFill}", fontcolor="${t.subNodeText}", color="${t.edgeColor}", width=1.8, height=0.4, fontsize=10];
+                        BM -> BM_SCH [dir=none, style=dotted, weight=10]; BM -> BM_REF [dir=none, style=dotted, weight=10];
+                `;
+            } else { dotSrc += `BM [label="Business Model\\n(Implementation /\\nSnapshot)", id="BM"];`; }
+
+            if (window.expandedNodeId === 'MT') {
+                dotSrc += `
+                        MT [label="Monitor / Test", id="MT"];
+                        MT_PY [label="custom_metrics.py", id="MT_PY", fillcolor="${t.subNodeFill}", fontcolor="${t.subNodeText}", color="${t.edgeColor}", width=1.6, height=0.3, fontsize=9];
+                        MT_REQ [label="required_assets.json", id="MT_REQ", fillcolor="${t.subNodeFill}", fontcolor="${t.subNodeText}", color="${t.edgeColor}", width=1.6, height=0.3, fontsize=9];
+                        MT_META [label="metadata.json", id="MT_META", fillcolor="${t.subNodeFill}", fontcolor="${t.subNodeText}", color="${t.edgeColor}", width=1.6, height=0.3, fontsize=9];
+                        MT -> MT_PY [dir=none, style=dotted, weight=10]; MT -> MT_REQ [dir=none, style=dotted, weight=10]; MT -> MT_META [dir=none, style=dotted, weight=10];
+                `;
+            } else { dotSrc += `MT [label="Monitor / Test", id="MT"];`; }
+
+            dotSrc += `
+                    }
+                    Job [label="Job", id="Job"];
+                    subgraph cluster_2 {
+                        peripheries=0; {rank=same; RT; DS;}
+                        RT [label="Runtime", id="RT"];
+                        DS [label="Data Systems\\n(flat files, RDBMS...)", id="DS"];
+                    }
+                    MTR [label="Test Result\\n(Attached to Model)", id="MTR"];
+
+                    UC -> BM [style=invis]; BM -> Job [label=""]; MT -> Job [label=""];
+                    Job -> RT [label="Job Output", dir=both]; Job -> MTR [label="Test Result", style=dashed]; RT -> DS [label="Model's Data Sets", dir=both];
+                }`;
+
+            viz.renderSVGElement(dotSrc).then(el => window.attachInteractivity(el, 'erd-canvas', window.erdDetails, window.selectedNodesErd, 'erd-detail-title', 'erd-detail-content', 'erd-detail-system')).catch(e => console.error(e));
+        };
+
+        window.renderERDAgentic = function() {
+            const viz = new Viz();
+            const t = window.getDotTheme();
+            let dotSrc = `
+                digraph G {
+                    bgcolor="transparent"; rankdir=TB; nodesep=0.5; ranksep=0.6; splines=ortho;
+                    node [fontname="Poppins", shape=box, style="filled, rounded", color="${t.primaryHex}", fontcolor="${t.nodeText}", width=2.4, height=0.6, fontsize=12];
+                    edge [fontname="Poppins", fontsize=10, color="${t.edgeColor}", fontcolor="${t.edgeColor}", penwidth=1.5];
+
+                    UC [label="Use Cases\\n(Agentic Initiatives)", id="AG_UC"];
+                    subgraph cluster_orch {
+                        peripheries=0; {rank=same; ORCH; A2A;}
+                        ORCH [label="Agent Orchestrator\\n(Planning / Routing)", id="AG_ORCH"];
+                        A2A [label="A2A Pattern\\n(Sub-Agents)", id="AG_A2A", fillcolor="${t.subNodeFill}", fontcolor="${t.subNodeText}", color="${t.edgeColor}"];
+                    }
+                    subgraph cluster_tools {
+                        peripheries=0; {rank=same; FM; TOOLS; GRD;}
+                        FM [label="Foundation LLMs\\n(Vendor / Bedrock)", id="AG_FM"];
+                        TOOLS [label="MCP Server & Tools\\n(RAG / APIs)", id="AG_TOOLS", fillcolor="${t.subNodeFill}", fontcolor="${t.subNodeText}", color="${t.edgeColor}"];
+                        GRD [label="Guardrails\\n(Safety / Policy)", id="AG_GRD", fillcolor="${t.subNodeFill}", fontcolor="${t.subNodeText}", color="${t.edgeColor}"];
+                    }
+                    MON [label="LLM Monitoring Package\\n(Quality & Metrics)", id="AG_MON"];
+
+                    UC -> ORCH [label=" Invokes"]; A2A -> ORCH [label=" Coordinates", dir=back, style=dashed];
+                    ORCH -> FM [label=" Prompts"]; ORCH -> TOOLS [label=" Calls"]; ORCH -> GRD [label=" Validates"];
+                    MON -> ORCH [style=dashed, dir=back, label=" Telemetry"]; MON -> FM [style=dashed, dir=back]; MON -> GRD [style=dashed, dir=back];
+                }`;
+            viz.renderSVGElement(dotSrc).then(el => window.attachInteractivity(el, 'erd-agentic-canvas', window.agenticErdDetails, window.selectedNodesAgentic, 'erd-agentic-detail-title', 'erd-agentic-detail-content', 'erd-agentic-detail-system')).catch(e => console.error(e));
+        };
+
+        window.renderPathwayERD = function() {
+            const viz = new Viz();
+            const t = window.getDotTheme();
+            const showClass = document.getElementById('cb-class').checked;
+            const showReg = document.getElementById('cb-reg').checked;
+            const showLLM = document.getElementById('cb-llm').checked;
+
+            const cGreen = '#006630';
+            const cDark = window.isDarkMode ? '#0f172a' : '#1e293b';
+            const cGray = window.isDarkMode ? '#334155' : '#f1f5f9';
+            const cText = window.isDarkMode ? '#f8fafc' : '#1e293b';
+            const cBorder = window.isDarkMode ? '#475569' : '#cbd5e1';
+
+            let dotSrc = `
+                digraph G {
+                    bgcolor="transparent"; rankdir=TB; nodesep=0.4; ranksep=0.5; splines=ortho;
+                    node [fontname="Poppins", shape=box, style="filled, rounded", color="${cBorder}", fontcolor="${cText}", fillcolor="${cGray}", width=2.4, height=0.6, fontsize=12, penwidth=1.5];
+                    edge [fontname="Poppins", fontsize=10, color="${t.edgeColor}", fontcolor="${t.edgeColor}", penwidth=1.5];
+
+                    Start [label="Enterprise AI Model", id="PW_Start", shape="oval", fillcolor="${cDark}", fontcolor="#ffffff", color="${cDark}"];
+                    ModelTypeCheck [label="Model Type\\nSelected?", id="PW_ModelTypeCheck", shape="diamond"];
+                    Start -> ModelTypeCheck;
+            `;
+
+            if (showClass) {
+                dotSrc += `
+                    Class [label="Classification Model", id="PW_Class", fillcolor="${cGreen}", fontcolor="#ffffff", color="${cGreen}"];
+                    ModelTypeCheck -> Class [label=" Classification"];
+                    
+                    ClassPerfCheck [label="Performance\\nMonitoring Needed?", id="PW_ClassPerfCheck", shape="diamond"];
+                    Class -> ClassPerfCheck;
+                    
+                    ClassPerfMonitor [label="Performance Monitor:\\nClassification Metrics\\n(AUC, Accuracy, Precision, Recall, F1)", id="PW_ClassPerf", penwidth=2, color="${cGreen}"];
+                    ClassPerfCheck -> ClassPerfMonitor [label=" YES"];
+                    
+                    ClassBiasCheck [label="Protected Classes\\nPresent?", id="PW_ClassBiasCheck", shape="diamond"];
+                    ClassPerfCheck -> ClassBiasCheck [label=" NO"];
+                    ClassPerfMonitor -> ClassBiasCheck;
+                    
+                    BiasCheckType [label="Bias Analysis\\nType?", id="PW_BiasCheckType", shape="diamond"];
+                    ClassBiasCheck -> BiasCheckType [label=" YES"];
+                    
+                    BiasGroup [label="Bias Monitor:\\nGroup Metrics", id="PW_BiasGroup", penwidth=2, color="${cGreen}"];
+                    BiasDisparity [label="Bias Monitor:\\nDisparity Metrics", id="PW_BiasDisparity", penwidth=2, color="${cGreen}"];
+                    BiasComp [label="Bias Monitor:\\nComprehensive", id="PW_BiasComp", penwidth=2, color="${cGreen}"];
+                    
+                    BiasCheckType -> BiasGroup [label=" Group Metrics"];
+                    BiasCheckType -> BiasDisparity [label=" Disparity"];
+                    BiasCheckType -> BiasComp [label=" Both"];
+                    
+                    ClassDriftCheck [label="Drift Detection\\nNeeded?", id="PW_ClassDriftCheck", shape="diamond"];
+                    ClassBiasCheck -> ClassDriftCheck [label=" NO"];
+                    BiasGroup -> ClassDriftCheck;
+                    BiasDisparity -> ClassDriftCheck;
+                    BiasComp -> ClassDriftCheck;
+
+                    DataDriftType [label="Data Drift\\nMethod?", id="PW_DataDriftType", shape="diamond"];
+                    ConceptDriftType [label="Concept Drift\\nMethod?", id="PW_ConceptDriftType", shape="diamond"];
+                    BothDriftCheck [label="Drift Method\\nPreference?", id="PW_BothDriftCheck", shape="diamond"];
+
+                    ClassDriftCheck -> DataDriftType [label=" Data Drift"];
+                    ClassDriftCheck -> ConceptDriftType [label=" Concept Drift"];
+                    ClassDriftCheck -> BothDriftCheck [label=" Both"];
+                    
+                    DataDriftStat [label="Data Drift Monitor:\\nStatistical Tests\\n(KS, ES, JS, KL)", id="PW_DataDriftStat", penwidth=2, color="${cGreen}"];
+                    ConceptDriftStat [label="Concept Drift Monitor:\\nStatistical Tests", id="PW_ConceptDriftStat", penwidth=2, color="${cGreen}"];
+                    DataDriftComp [label="Data Drift Monitor:\\nComprehensive", id="PW_DataDriftComp", penwidth=2, color="${cGreen}"];
+                    ConceptDriftComp [label="Concept Drift Monitor:\\nComprehensive", id="PW_ConceptDriftComp", penwidth=2, color="${cGreen}"];
+
+                    DataDriftType -> DataDriftStat [label=" Statistical"];
+                    DataDriftType -> DataDriftComp [label=" Comprehensive"];
+                    ConceptDriftType -> ConceptDriftStat [label=" Statistical"];
+                    ConceptDriftType -> ConceptDriftComp [label=" Comprehensive"];
+                    
+                    BothDriftCheck -> DataDriftComp [label=" Both"];
+                    BothDriftCheck -> ConceptDriftComp [label=" Both"];
+
+                    ClassVolCheck [label="Volumetric\\nMonitoring Needed?", id="PW_ClassVolCheck", shape="diamond"];
+                    ClassDriftCheck -> ClassVolCheck [label=" NO"];
+                    DataDriftStat -> ClassVolCheck;
+                    DataDriftComp -> ClassVolCheck;
+                    ConceptDriftStat -> ClassVolCheck;
+                    ConceptDriftComp -> ClassVolCheck;
+
+                    VolCount [label="Volumetric Monitor:\\nCount", id="PW_VolCount", penwidth=2, color="${cGreen}"];
+                    ClassVolCheck -> VolCount [label=" YES"];
+                    
+                    ClassStabilityCheck [label="Stability\\nAnalysis Needed?", id="PW_ClassStabilityCheck", shape="diamond"];
+                    ClassVolCheck -> ClassStabilityCheck [label=" NO"];
+                    VolCount -> ClassStabilityCheck;
+
+                    StabilityMonitor [label="Stability Monitor:\\nPSI/CSI", id="PW_StabilityMonitor", penwidth=2, color="${cGreen}"];
+                    ClassStabilityCheck -> StabilityMonitor [label=" YES"];
+                    
+                    ClassEnd [label="Classification\\nSelection Complete", id="PW_ClassEnd", shape="oval", fillcolor="${cDark}", fontcolor="#ffffff", color="${cDark}"];
+                    ClassStabilityCheck -> ClassEnd [label=" NO"];
+                    StabilityMonitor -> ClassEnd;
+                `;
+            }
+            if (showReg) {
+                dotSrc += `
+                    Reg [label="Regression Model", id="PW_Reg", fillcolor="${cGreen}", fontcolor="#ffffff", color="${cGreen}"];
+                    ModelTypeCheck -> Reg [label=" Regression"];
+                    
+                    RegPerfCheck [label="Performance\\nMonitoring Needed?", id="PW_RegPerfCheck", shape="diamond"];
+                    Reg -> RegPerfCheck;
+                    
+                    RegPerfMonitor [label="Performance Monitor:\\nRegression Metrics\\n(MAE, RMSE, R2 Score)", id="PW_RegPerf", penwidth=2, color="${cGreen}"];
+                    RegPerfCheck -> RegPerfMonitor [label=" YES"];
+                    
+                    RegDiagCheck [label="Statistical\\nDiagnostics Needed?", id="PW_RegDiagCheck", shape="diamond"];
+                    RegPerfCheck -> RegDiagCheck [label=" NO"];
+                    RegPerfMonitor -> RegDiagCheck;
+
+                    DiagType [label="Diagnostic\\nType?", id="PW_DiagType", shape="diamond"];
+                    RegDiagCheck -> DiagType [label=" YES"];
+                    
+                    NormalityTest [label="Normality Monitor\\n(KS, Anderson-Darling)", id="PW_NormalityTest", penwidth=2, color="${cGreen}"];
+                    LinearityTest [label="Linearity Monitor\\n(Box-Tidwell, Pearson)", id="PW_LinearityTest", penwidth=2, color="${cGreen}"];
+                    HomoscedTest [label="Homoscedasticity Monitor\\n(Breusch-Pagan, Engle)", id="PW_HomoscedTest", penwidth=2, color="${cGreen}"];
+                    
+                    DiagType -> NormalityTest [label=" Normality"];
+                    DiagType -> LinearityTest [label=" Linearity"];
+                    DiagType -> HomoscedTest [label=" Homoscedasticity"];
+                    
+                    RegDriftCheck [label="Drift Detection\\nNeeded?", id="PW_RegDriftCheck", shape="diamond"];
+                    RegDiagCheck -> RegDriftCheck [label=" NO"];
+                    NormalityTest -> RegDriftCheck;
+                    LinearityTest -> RegDriftCheck;
+                    HomoscedTest -> RegDriftCheck;
+
+                    RegVolCheck [label="Volumetric\\nMonitoring Needed?", id="PW_RegVolCheck", shape="diamond"];
+                    RegDriftCheck -> RegVolCheck [label=" NO/Completed"]; 
+                    
+                    RegVolCount [label="Volumetric Monitor:\\nCount", id="PW_RegVolCount", penwidth=2, color="${cGreen}"];
+                    RegVolCheck -> RegVolCount [label=" YES"];
+
+                    RegEnd [label="Regression\\nSelection Complete", id="PW_RegEnd", shape="oval", fillcolor="${cDark}", fontcolor="#ffffff", color="${cDark}"];
+                    RegVolCheck -> RegEnd [label=" NO"];
+                    RegVolCount -> RegEnd;
+                `;
+            }
+            if (showLLM) {
+                dotSrc += `
+                    LLM [label="GenAI / LLMs", id="PW_LLM", fillcolor="${cGreen}", fontcolor="#ffffff", color="${cGreen}"];
+                    ModelTypeCheck -> LLM [label=" LLM/Text Gen"];
+                    
+                    LLMTypeCheck [label="LLM Monitor\\nType?", id="PW_LLMTypeCheck", shape="diamond"];
+                    LLM -> LLMTypeCheck;
+                    
+                    LLMStandardized [label="LLM Standardized Tests\\n(Sentiment, PII, Word Count)", id="PW_LLMStd", penwidth=2, color="${cGreen}"];
+                    LLMFull [label="LLM Full Suite\\n(Standard + Bias, Accuracy,\\nRails, Prompt Val)", id="PW_LLMFull", penwidth=2, color="${cGreen}"];
+                    NLPStandardized [label="NLP Standardized Tests", id="PW_NLPStd", penwidth=2, color="${cGreen}"];
+                    
+                    LLMTypeCheck -> LLMStandardized [label=" Standard"];
+                    LLMTypeCheck -> LLMFull [label=" Full Suite"];
+                    LLMTypeCheck -> NLPStandardized [label=" NLP Only"];
+                    
+                    LLMDriftCheck [label="Drift Detection\\nNeeded?", id="PW_LLMDriftCheck", shape="diamond"];
+                    LLMStandardized -> LLMDriftCheck;
+                    LLMFull -> LLMDriftCheck;
+                    NLPStandardized -> LLMDriftCheck;
+
+                    LLMEnd [label="LLM Selection\\nComplete", id="PW_LLMEnd", shape="oval", fillcolor="${cDark}", fontcolor="#ffffff", color="${cDark}"];
+                    LLMDriftCheck -> LLMEnd [label=" NO/Completed"];
+                `;
+            }
+
+            dotSrc += `
+                MonitorEnd [label="Monitor Selection\\nComplete", id="PW_MonitorEnd", shape="oval", fillcolor="${cDark}", fontcolor="#ffffff", color="${cDark}"];
+                MLCIntegration [label="MLC Template\\nGeneration", id="PW_MLCIntegration", penwidth=2, color="${cGreen}"];
+                EndSuccess [label="Complete Solution:\\nModel + Monitors Deployed", id="PW_EndSuccess", shape="oval", fillcolor="${cGreen}", fontcolor="#ffffff", color="${cGreen}"];
+                
+                ${showClass ? 'ClassEnd -> MonitorEnd;' : ''}
+                ${showReg ? 'RegEnd -> MonitorEnd;' : ''}
+                ${showLLM ? 'LLMEnd -> MonitorEnd;' : ''}
+                
+                MonitorEnd -> MLCIntegration;
+                MLCIntegration -> EndSuccess;
+            }`;
+
+            viz.renderSVGElement(dotSrc).then(el => window.attachInteractivity(el, 'pathway-canvas', window.pathwayDetails, window.selectedNodesPathway, 'pw-detail-title', 'pw-detail-content', null)).catch(e => console.error(e));
+        };
+
+        window.attachInteractivity = function(svgElement, containerId, detailMap, selectedSet, titleId, contentId, sysId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = "";
+            svgElement.style.width = '100%'; svgElement.style.height = '100%';
+            container.appendChild(svgElement);
+            window.setupZoomPan(svgElement);
+            
+            const svgNodes = container.querySelectorAll('.node');
+
+            svgElement.addEventListener('click', (e) => {
+                const clickedNode = e.target.closest('.node');
+                if (!clickedNode) {
+                    if (containerId === 'erd-canvas' && window.expandedNodeId !== null) {
+                        window.expandedNodeId = null;
+                        window.renderERD(); return;
+                    }
+                    selectedSet.clear();
+                    svgNodes.forEach(n => n.style.opacity = '1');
+                    document.getElementById(titleId).innerText = "Overview";
+                    document.getElementById(contentId).innerHTML = `<p>Select a node in the diagram to view its details.</p>`;
+                    if(sysId) document.getElementById(sysId).innerText = "System Explorer";
+                }
+            });
+
+            svgNodes.forEach(node => {
+                node.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = node.getAttribute('id');
+                    
+                    if (e.ctrlKey || e.metaKey) {
+                        if (selectedSet.has(id)) selectedSet.delete(id);
+                        else selectedSet.add(id);
+                    } else {
+                        selectedSet.clear(); selectedSet.add(id);
+                        if (containerId === 'erd-canvas' && (id === 'MT' || id === 'BM')) {
+                            if (window.expandedNodeId !== id) { window.expandedNodeId = id; window.renderERD(); return; }
+                        }
+                    }
+                    
+                    window.updateInspectorMulti(selectedSet, detailMap, titleId, contentId, sysId);
+                    svgNodes.forEach(n => {
+                        if (selectedSet.has(n.getAttribute('id')) || (window.expandedNodeId === n.getAttribute('id'))) n.style.opacity = '1';
+                        else n.style.opacity = '0.4';
+                    });
+                });
+            });
+
+            if (window.expandedNodeId || selectedSet.size > 0) {
+                svgNodes.forEach(n => {
+                    if (selectedSet.has(n.getAttribute('id')) || window.expandedNodeId === n.getAttribute('id')) n.style.opacity = '1';
+                    else n.style.opacity = '0.4';
+                });
+                if(selectedSet.size > 0) window.updateInspectorMulti(selectedSet, detailMap, titleId, contentId, sysId);
+            }
+        };
+
+        // --- Artifact Boilerplate Logic ---
+        window.codeTemplates = {
+            'class': `import pandas as pd\nimport modelop.schema.infer as infer\nfrom sklearn.metrics import accuracy_score, f1_score\n\ndef init(init_param):\n    global LABEL_COL, SCORE_COL\n    schema = infer.extract_input_schema(init_param)\n    params = infer.set_monitoring_parameters(schema_json=schema, check_schema=True)\n    LABEL_COL = params['label_column']\n    SCORE_COL = params['score_column']\n\ndef metrics(data: pd.DataFrame):\n    """Evaluates binary/multi-class classification performance."""\n    acc = accuracy_score(data[LABEL_COL], data[SCORE_COL])\n    f1 = f1_score(data[LABEL_COL], data[SCORE_COL], average='weighted')\n    \n    yield {\n        "accuracy": round(acc, 4),\n        "f1_score": round(f1, 4),\n        "status": "PASS" if acc > 0.85 else "FAIL"\n    }`,
+            'drift': `import pandas as pd\nfrom scipy.stats import ks_2samp\nimport modelop.schema.infer as infer\n\ndef init(init_param):\n    global NUMERICAL_COLS\n    schema = infer.extract_input_schema(init_param)\n    params = infer.set_monitoring_parameters(schema_json=schema, check_schema=True)\n    NUMERICAL_COLS = params['numerical_columns']\n\ndef metrics(df_baseline: pd.DataFrame, df_sample: pd.DataFrame):\n    """Computes Kolmogorov-Smirnov test for Data Drift."""\n    ks_results = {}\n    \n    for feat in NUMERICAL_COLS:\n        stat, pval = ks_2samp(df_baseline[feat], df_sample[feat])\n        ks_results[f"{feat}_pvalue"] = round(pval, 4)\n        ks_results[f"{feat}_drift_detected"] = pval < 0.05\n        \n    yield ks_results`,
+            'llm': `import pandas as pd\nfrom textblob import TextBlob\n\ndef metrics(data: pd.DataFrame):\n    """Evaluates LLM output sentiment and basic rails."""\n    results = {"total_responses": len(data), "flagged_toxic": 0}\n    \n    for _, row in data.iterrows():\n        response_text = str(row.get('llm_response', ''))\n        sentiment = TextBlob(response_text).sentiment.polarity\n        if sentiment < -0.5:\n            results["flagged_toxic"] += 1\n            \n    results["toxicity_rate"] = results["flagged_toxic"] / len(data)\n    yield results`
+        };
+
+        window.artifacts = {
+            py: { title: "custom_metrics.py", desc: "The primary source. Use pills to generate boilerplate.", showTabs: true },
+            json: { title: "metadata.json", desc: "The 'identity card' for your monitor.", showTabs: false, code: `{\n  "tags": ["governance", "v3.4"],\n  "modelCategory": "MODEL_MONITORING_MODEL",\n  "defaultAssociationRole": "PERFORMANCE_MODEL",\n  "frequentlyUsed": true,\n  "custom": {\n    "modelopPackageVersion": "1.0.0"\n  }\n}` },
+            req: { title: "required_assets.json", desc: "Describes schema requirements (Baseline vs Sample).", showTabs: false, code: `[\n  {\n    "usage": "INPUT_ASSET",\n    "assetRole": "BASELINE_DATA",\n    "metaData": { "description": "Historic reference data" }\n  },\n  {\n    "usage": "INPUT_ASSET",\n    "assetRole": "SAMPLE_DATA",\n    "metaData": { "description": "Current production slice" }\n  }\n]` }
+        };
+
+        window.showArtifact = function(key) {
+            document.querySelectorAll('.interactive-card').forEach(card => card.classList.remove('selected'));
+            document.getElementById('card-' + key).classList.add('selected');
+            const data = window.artifacts[key];
+            document.getElementById('art-title').innerText = data.title;
+            document.getElementById('art-desc').innerText = data.desc;
+            const selector = document.getElementById('template-selector');
+            if (data.showTabs) {
+                selector.classList.remove('hidden');
+                document.getElementById('art-code').innerText = window.codeTemplates[window.currentTemplate];
+            } else {
+                selector.classList.add('hidden');
+                document.getElementById('art-code').innerText = data.code;
+            }
+        };
+
+        window.switchTemplate = function(type) {
+            window.currentTemplate = type;
+            document.querySelectorAll('.template-pill').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-type') === type) btn.classList.add('active');
+            });
+            document.getElementById('art-code').innerText = window.codeTemplates[type];
+        };
+
+        window.copyArtifactCode = function(btnElement) {
+            const codeText = document.getElementById('art-code').innerText;
+            const textArea = document.createElement("textarea");
+            textArea.value = codeText;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                document.execCommand('copy');
+                window.showToast("Code copied to clipboard!");
+                
+                const icon = btnElement.querySelector('.copy-icon');
+                const text = btnElement.querySelector('.copy-text');
+                icon.innerText = 'check';
+                text.innerText = 'Copied!';
+                setTimeout(() => {
+                    icon.innerText = 'content_copy';
+                    text.innerText = 'Copy';
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+                window.showToast("Failed to copy code.", "error");
+            }
+            document.body.removeChild(textArea);
+        };
+
+        window.initChart = function() {
+            const ctx = document.getElementById('capChart');
+            if(!ctx) return;
+            
+            if(window.capChartObj) window.capChartObj.destroy();
+
+            const colStd = '#94a3b8'; 
+            const colStat = '#cbd5e1'; 
+            const colLLM = '#006630'; 
+            const gridColor = window.isDarkMode ? '#2e2e2e' : '#f1f5f9';
+            const textColor = window.isDarkMode ? '#9ca3af' : '#64748b';
+
+            window.capChartObj = new Chart(ctx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Regression', 'Classification', 'NLP/Chatbot (LLM)', 'Summarizer (LLM)'],
+                    datasets: [
+                        { label: 'Standard Ops/Drift', data: [5, 5, 2, 0], backgroundColor: colStd },
+                        { label: 'Statistical Tests', data: [4, 0, 0, 0], backgroundColor: colStat },
+                        { label: 'LLM Specific', data: [0, 3, 8, 4], backgroundColor: colLLM }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            stacked: true, max: 10,
+                            grid: { color: gridColor }, ticks: { color: textColor, stepSize: 1 },
+                            title: { display: true, text: 'Number of Monitor Types', color: textColor }
+                        },
+                        x: {
+                            stacked: true, grid: { display: false },
+                            ticks: { color: textColor, maxRotation: 15, minRotation: 15 }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: textColor, font: { family: 'Poppins', size: 11 }, usePointStyle: true, boxWidth: 12 } }
+                    }
+                }
+            });
+        };
+
+        window.onload = () => {
+            window.initChart();
+            window.showArtifact('py');
+            window.switchTemplate('class');
+            window.renderERD();
+            window.renderPathwayERD();
+        };
+    </script>
+</body>
+</html>
