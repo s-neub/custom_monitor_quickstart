@@ -1,3 +1,22 @@
+Sam's Manulife Discovery
+Manulife Sets Course to Become an AI-Powered Insurer | Insurance Innovation Reporter, accessed April 2, 2026, https://iireporter.com/manulife-sets-course-to-become-an-ai-powered-insurer/
+Manulife updates underwriting AI, doubles instant approval rate - Investment Executive, accessed April 2, 2026, https://www.investmentexecutive.com/news/manulife-updates-underwriting-ai-doubles-instant-approval-rate/
+Manulife Highlights Responsible AI Strategy Amid Expanding GenAI Deployment, accessed April 2, 2026, https://www.cdomagazine.tech/aiml/manulife-highlights-responsible-ai-strategy-amid-expanding-genai-deployment
+Manulife's AI Principles, accessed April 2, 2026, https://www.manulife.com/content/dam/manulife-com/ca/financial-documents/pas/en/MFC_AI_2024_EN.pdf
+Model risk management for federally regulated financial institutions - Dentons, accessed April 2, 2026, https://www.dentons.com/en/insights/alerts/2025/october/8/model-risk-management-for-federally-regulated-financial-institutions
+OSFI updates and expands scope of Guideline E-23 for AI governance | Insights - Torys LLP, accessed April 2, 2026, https://www.torys.com/our-latest-thinking/publications/2025/10/osfi-updates-and-expands-scope-of-guideline-e-23
+Manulife Kickoff, https://drive.google.com/open?id=1ApxJZs6uR1fTokUrAyuRfek8EvFqdeZ67mD2VIiblco
+Updated invitation: Internal: Manulife WS2 Prep @ Thu Apr 2, 2026 3pm - 3:30pm (EDT) (Sam Neubauer), https://mail.google.com/mail/u/0/#all/FMfcgzQgLFkHVsLBLGTlKDrlGgZczQKj
+Agenda - Model Risk Management, Canada, marcus evans Conferences, accessed April 2, 2026, https://www.marcusevans.com/conferences/modelriskcanada/agenda
+AI Automation RFP Requirements Final.xlsx
+Fwd: Monitoring in ModelOp Center: Getting Started Resources, https://mail.google.com/mail/u/0/#all/FMfcgzQfCDTCNDntPSXlhCjnZBnCTbrM
+Guideline E-23 – Model Risk Management (2027) - Office of the Superintendent of Financial Institutions - OSFI, accessed April 2, 2026, https://www.osfi-bsif.gc.ca/en/guidance/guidance-library/guideline-e-23-model-risk-management-2027
+OSFI E-23 Guideline and Its Impact on Financial Institutions - McCarthy Tétrault LLP, accessed April 2, 2026, https://www.mccarthy.ca/en/insights/blogs/techlex/osfi-e-23-guideline-and-its-impact-on-financial-institutions
+OSFI Releases Final Guideline E-23 for Model Risk Management and AI Use by Federally Regulated Financial Institutions - Blakes, accessed April 2, 2026, https://www.blakes.com/insights/osfi-releases-final-guideline-e-23-for-model-risk-management-and-ai-use-by-frfis/
+ModelOp_Manulife_Jumpstart_SOW_March2026_(BW_March_30_2026)_MO_final.docx.pdf
+ModelOp_Jumpstart Implementation GANTT Chart and RACI v2 MANULIFE.xlsx
+OSFI's E-23 Model Risk Management Guideline | Protiviti Global, accessed April 2, 2026, https://www.protiviti.com/gl-en/insights-paper/strengthening-decision-making-with-osfi-e-23-model
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -78,6 +97,9 @@
         .sidebar-minimized .nav-btn { justify-content: center; padding-left: 0; padding-right: 0; }
         .sidebar-minimized .nav-btn .material-symbols-outlined { margin: 0; font-size: 24px; }
         
+        .sidebar-minimized .sidebar-header-container { padding-left: 0; padding-right: 0; justify-content: center; }
+        .sidebar-minimized .sidebar-actions { flex-direction: column !important; gap: 12px; }
+
         .nav-btn { color: var(--text-main); border-left: 4px solid transparent; }
         .nav-btn:hover { color: var(--primary); background-color: var(--panel-light); }
         .nav-btn.active { background-color: var(--panel-light); color: var(--primary); border-left: 4px solid var(--primary); font-weight: 600; }
@@ -186,6 +208,26 @@
         </div>
     </div>
 
+    <!-- Fallback Download Modal for Iframes -->
+    <div id="download-fallback-modal" class="fixed inset-0 z-[100000] hidden items-center justify-center bg-black/80 p-4 lg:p-10 transition-opacity">
+        <div class="bg-[var(--panel-bg)] rounded-xl p-6 w-full max-w-5xl flex flex-col shadow-2xl h-[90vh]">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h3 class="text-xl font-bold text-[var(--text-main)] flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[var(--primary)]">file_download</span> Download Ready
+                    </h3>
+                    <p class="text-sm text-[var(--text-light)] mt-1">Right-click the image below and select <b>"Save Image As..."</b> to copy it.</p>
+                </div>
+                <button onclick="document.getElementById('download-fallback-modal').classList.replace('flex', 'hidden')" class="text-[var(--text-light)] hover:text-[var(--text-main)] transition-colors">
+                    <span class="material-symbols-outlined text-3xl">close</span>
+                </button>
+            </div>
+            <div class="overflow-auto flex-1 border-2 border-dashed border-[var(--border)] rounded-lg flex items-center justify-center bg-[var(--panel-light)] p-4">
+                <img id="fallback-download-img" src="" alt="Generated Slide" class="max-w-full h-auto object-contain shadow-md" />
+            </div>
+        </div>
+    </div>
+
     <!-- Hidden Slide Staging Area (for HTML2Canvas) -->
     <div id="slide-staging-area">
         <div id="slide-header">
@@ -237,12 +279,12 @@
 
     <!-- Sidebar Navigation -->
     <nav id="sidebar" class="sidebar-expanded fixed md:relative inset-y-0 left-0 transform -translate-x-full md:translate-x-0 transition-all duration-300 ease-in-out bg-[var(--panel-bg)] border-r border-[var(--border)] flex flex-col h-full z-40 shadow-xl md:shadow-none shrink-0 overflow-hidden">
-        <div class="p-6 pb-4 flex justify-between items-center whitespace-nowrap">
+        <div class="sidebar-header-container p-6 pb-4 flex justify-between items-center whitespace-nowrap">
             <div class="nav-header-text overflow-hidden">
                 <h1 class="text-2xl font-bold text-[var(--primary)] tracking-tight">ModelOp</h1>
                 <p class="text-[10px] uppercase tracking-widest font-bold text-[var(--text-light)] mt-1">Quickstart Guide</p>
             </div>
-            <div class="hidden md:flex items-center gap-1">
+            <div class="sidebar-actions hidden md:flex items-center gap-1">
                 <button onclick="window.exportCurrentSlide()" class="action-btn action-btn-outline text-[var(--primary)] border-[var(--primary)] px-2" title="Download Current View as PPT Slide PNG">
                     <span class="material-symbols-outlined text-[16px]">download</span>
                 </button>
@@ -286,6 +328,31 @@
                 <li>
                     <button class="nav-btn w-full text-left px-6 py-3 text-sm flex items-center gap-3 transition-colors" onclick="window.switchTab(this, 'deployment')" title="Deployment Workflow">
                         <span class="material-symbols-outlined text-[20px]">call_made</span> <span class="nav-text">Deployment Workflow</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn w-full text-left px-6 py-3 text-sm flex items-center gap-3 transition-colors" onclick="window.switchTab(this, 'ootb-monitors')" title="OOTB Monitors">
+                        <span class="material-symbols-outlined text-[20px]">checklist</span> <span class="nav-text">OOTB Monitors</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn w-full text-left px-6 py-3 text-sm flex items-center gap-3 transition-colors" onclick="window.switchTab(this, 'job-scheduling')" title="Job Scheduling">
+                        <span class="material-symbols-outlined text-[20px]">schedule</span> <span class="nav-text">Job Scheduling</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn w-full text-left px-6 py-3 text-sm flex items-center gap-3 transition-colors" onclick="window.switchTab(this, 'custom-integrations')" title="Custom Integrations">
+                        <span class="material-symbols-outlined text-[20px]">power_plug</span> <span class="nav-text">Custom Integrations</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn w-full text-left px-6 py-3 text-sm flex items-center gap-3 transition-colors" onclick="window.switchTab(this, 'sdk-integration')" title="SDK Integration">
+                        <span class="material-symbols-outlined text-[20px]">settings_ethernet</span> <span class="nav-text">SDK Integration</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn w-full text-left px-6 py-3 text-sm flex items-center gap-3 transition-colors" onclick="window.switchTab(this, 'mcp-services')" title="MCP Services">
+                        <span class="material-symbols-outlined text-[20px]">extension</span> <span class="nav-text">MCP Services</span>
                     </button>
                 </li>
             </ul>
@@ -444,7 +511,6 @@
                 </div>
                 
                 <div class="flex flex-col lg:flex-row gap-6 relative lg:h-[600px] w-full">
-                    <!-- Left: Node Inspector -->
                     <div class="w-full lg:w-80 flex flex-col gap-4 shrink-0 h-full card p-6" id="pathway-inspector-container">
                         <div class="flex justify-between items-center mb-3">
                             <h3 class="font-bold text-[var(--primary)] uppercase tracking-wider text-xs flex items-center gap-1">
@@ -462,7 +528,6 @@
                         </div>
                     </div>
 
-                    <!-- Middle: Canvas -->
                     <div class="card flex-1 flex flex-col min-h-[500px] lg:min-h-0 h-full overflow-hidden bg-[var(--panel-light)] border-[var(--border)] relative" id="pathway-card-container">
                         <button onclick="window.toggleFullscreen('pathway-card-container', 'pathway-inspector-container', 'pathway-filters-container')" class="absolute top-4 right-4 z-20 bg-[var(--panel-bg)] border border-[var(--border)] p-1.5 rounded hover:text-[var(--primary)] text-[var(--text-light)] shadow-sm transition-colors"><span class="material-symbols-outlined text-[18px]">fullscreen</span></button>
                         <div id="pathway-canvas" class="zoom-pan-wrapper w-full h-full">
@@ -470,7 +535,6 @@
                         </div>
                     </div>
 
-                    <!-- Right: Filters -->
                     <div class="w-full lg:w-72 flex flex-col gap-4 shrink-0 h-full card p-6" id="pathway-filters-container">
                         <div class="flex justify-between items-center mb-3">
                             <h3 class="font-bold text-[var(--primary)] uppercase tracking-wider text-xs flex items-center gap-1">
@@ -518,9 +582,9 @@
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4">
                     <div>
                         <h2 class="text-3xl font-bold mb-4 tracking-tight">Key Concepts: Execution Architectures</h2>
-                        <p class="text-body text-lg">Interact with the architecture diagrams below. Toggle between standard monitoring and agentic LLM patterns.</p>
+                        <p class="text-body text-lg max-w-4xl">Interact with the architecture diagrams below. Toggle between standard monitoring and agentic LLM patterns. Both utilize uniform structures aligned through the Job Execution core.</p>
                     </div>
-                    <div class="bg-[var(--panel-light)] p-1 rounded-lg border border-[var(--border)] flex shrink-0">
+                    <div class="bg-[var(--panel-light)] p-1 rounded-lg border border-[var(--border)] flex shrink-0 shadow-sm">
                         <button id="btn-arch-standard" onclick="window.switchArchitecture('standard')" class="px-4 py-2 rounded-md text-sm font-semibold transition-all bg-[var(--primary)] text-white shadow-sm">Standard Monitor</button>
                         <button id="btn-arch-agentic" onclick="window.switchArchitecture('agentic')" class="px-4 py-2 rounded-md text-sm font-semibold text-[var(--text-light)] hover:text-[var(--text-main)] transition-all">Agentic LLM</button>
                     </div>
@@ -537,8 +601,8 @@
                                 <span class="text-[10px] text-[var(--text-light)] ml-auto normal-case tracking-normal">Ctrl+Click multi</span>
                             </div>
                             <h4 id="erd-detail-title" class="font-bold text-xl mb-3 text-[var(--text-main)]">Execution Process</h4>
-                            <div id="erd-detail-content" class="text-sm text-body space-y-3 flex-1 overflow-y-auto pr-2">
-                                <p>Select a node in the diagram to view its details.</p>
+                            <div id="erd-detail-content" class="text-sm text-[var(--text-light)] space-y-3 flex-1 overflow-y-auto pr-2">
+                                <p>Select a node or edge in the diagram to view its details.</p>
                                 <ol class="list-decimal pl-4 space-y-2 mt-4 text-xs text-[var(--text-light)]">
                                     <li>Process initiated (via UI/API)</li>
                                     <li>Metrics job created (via MLC)</li>
@@ -549,13 +613,13 @@
                                     <li>Model Test Result attached</li>
                                 </ol>
                             </div>
-                            <div class="mt-auto pt-4 border-t border-[var(--border)]" id="erd-sys-wrapper">
+                            <div class="mt-auto pt-4 border-t border-[var(--border)] shrink-0" id="erd-sys-wrapper">
                                 <div class="text-[10px] uppercase font-bold text-[var(--text-light)]">System Component Identifier</div>
                                 <div id="erd-detail-system" class="text-xs font-mono bg-[var(--panel-light)] border border-[var(--border)] text-[var(--text-main)] px-2 py-1 rounded mt-1 inline-block">modelop.core</div>
                             </div>
                         </div>
                     </div>
-                    <div class="card flex-1 flex flex-col min-h-[500px] lg:min-h-0 h-full overflow-hidden relative" id="erd-card-container">
+                    <div class="card flex-1 flex flex-col min-h-[500px] lg:min-h-0 h-full overflow-hidden bg-[var(--panel-light)] border-[var(--border)] relative" id="erd-card-container">
                         <button onclick="window.toggleFullscreen('erd-card-container', 'arch-controls')" class="absolute top-4 right-4 z-20 bg-[var(--panel-bg)] border border-[var(--border)] p-1.5 rounded hover:text-[var(--primary)] text-[var(--text-light)] shadow-sm transition-colors"><span class="material-symbols-outlined text-[18px]">fullscreen</span></button>
                         <div id="erd-canvas" class="zoom-pan-wrapper w-full h-full">
                             <div class="animate-pulse text-[var(--text-light)] flex items-center justify-center w-full h-full gap-2"><span class="material-symbols-outlined animate-spin">sync</span> Generating Architecture Map...</div>
@@ -574,23 +638,22 @@
                                 <span class="text-[10px] text-[var(--text-light)] ml-auto normal-case tracking-normal">Ctrl+Click multi</span>
                             </div>
                             <h4 id="erd-agentic-detail-title" class="font-bold text-xl mb-3 text-[var(--text-main)]">Agentic Architecture</h4>
-                            <div id="erd-agentic-detail-content" class="text-sm text-body space-y-3 flex-1 overflow-y-auto pr-2">
-                                <p>Select a node in the diagram to view its details.</p>
+                            <div id="erd-agentic-detail-content" class="text-sm text-[var(--text-light)] space-y-3 flex-1 overflow-y-auto pr-2">
+                                <p>Select a node or edge in the diagram to view its details.</p>
                                 <ul class="list-disc pl-4 space-y-2 mt-4 text-xs text-[var(--text-light)]">
-                                    <li>Autonomous reasoning & planning</li>
-                                    <li>Tool and API execution (MCP)</li>
-                                    <li>Multi-agent orchestration</li>
-                                    <li>Guardrail validations</li>
-                                    <li>Continuous LLM monitoring</li>
+                                    <li>Automated testing analysis</li>
+                                    <li>Auto-Fill intake workflows</li>
+                                    <li>Auto-Gen documentation templates</li>
+                                    <li>Auto-Map risks from Policy</li>
                                 </ul>
                             </div>
-                            <div class="mt-auto pt-4 border-t border-[var(--border)]" id="agentic-sys-wrapper">
+                            <div class="mt-auto pt-4 border-t border-[var(--border)] shrink-0" id="agentic-sys-wrapper">
                                 <div class="text-[10px] uppercase font-bold text-[var(--text-light)]">System Component Identifier</div>
                                 <div id="erd-agentic-detail-system" class="text-xs font-mono bg-[var(--panel-light)] border border-[var(--border)] text-[var(--text-main)] px-2 py-1 rounded mt-1 inline-block">modelop.agent</div>
                             </div>
                         </div>
                     </div>
-                    <div class="card flex-1 flex flex-col min-h-[500px] lg:min-h-0 h-full overflow-hidden relative" id="agentic-card-container">
+                    <div class="card flex-1 flex flex-col min-h-[500px] lg:min-h-0 h-full overflow-hidden bg-[var(--panel-light)] border-[var(--border)] relative" id="agentic-card-container">
                         <button onclick="window.toggleFullscreen('agentic-card-container', 'agentic-controls')" class="absolute top-4 right-4 z-20 bg-[var(--panel-bg)] border border-[var(--border)] p-1.5 rounded hover:text-[var(--primary)] text-[var(--text-light)] shadow-sm transition-colors"><span class="material-symbols-outlined text-[18px]">fullscreen</span></button>
                         <div id="erd-agentic-canvas" class="zoom-pan-wrapper w-full h-full">
                             <div class="animate-pulse text-[var(--text-light)] flex items-center justify-center w-full h-full gap-2"><span class="material-symbols-outlined animate-spin">sync</span> Generating Architecture Map...</div>
@@ -696,6 +759,789 @@
                                     <li>The UI will prompt you to map specific data assets as defined in your <code>required_assets.json</code>.</li>
                                     <li>Click <strong>Play</strong> to spawn the Job and yield your metrics.</li>
                                 </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 7: OOTB Monitors Catalog -->
+            <section id="ootb-monitors" class="page-section max-w-6xl mx-auto">
+                <div class="mb-10">
+                    <h2 class="text-3xl font-bold mb-4 tracking-tight">Out-of-the-Box (OOTB) Monitors Catalog</h2>
+                    <p class="text-body text-lg">ModelOp Center provides an extensive library of pre-built monitors covering classification, regression, fairness, drift, stability, and volumetric analysis. Click on each group to explore available monitors and their configurations.</p>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Classification & Performance Group -->
+                    <div class="monitor-group">
+                        <div class="monitor-group-header cursor-pointer p-4 bg-[var(--panel-light)] border border-[var(--border)] rounded-lg flex items-center justify-between hover:border-[var(--primary)]" onclick="window.toggleMonitorGroup(this)">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-[24px] text-[var(--primary)]">trending_up</span>
+                                <div>
+                                    <div class="font-bold text-lg text-[var(--text-main)]">Classification & Performance</div>
+                                    <div class="text-xs text-[var(--text-light)]">AUC, Accuracy, Precision, Recall, F1, Confusion Matrix</div>
+                                </div>
+                            </div>
+                            <span class="material-symbols-outlined text-[var(--text-light)] transition-transform">expand_more</span>
+                        </div>
+                        <div class="monitor-group-content hidden px-6 py-4 bg-[var(--panel-light)] border border-t-0 border-[var(--border)] rounded-b-lg space-y-3">
+                            <div class="monitor-card p-4 bg-[var(--panel-bg)] border border-[var(--border)] rounded-lg">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h4 class="font-bold text-[15px] text-[var(--text-main)]">AUC-ROC Monitor</h4>
+                                        <p class="text-xs text-[var(--text-light)] mt-1">Evaluates model discrimination at all decision thresholds</p>
+                                    </div>
+                                    <span class="inline-block px-2 py-1 text-[11px] font-bold bg-[#00a962] text-white rounded">v3.4</span>
+                                </div>
+                                <div class="text-xs text-[var(--text-light)] space-y-2 mt-3">
+                                    <div><strong>Input Schema:</strong> <code class="text-[#94a3b8]">score_column, label_column</code></div>
+                                    <div><strong>Output Metric:</strong> AUC score (0.0-1.0)</div>
+                                    <div><strong>Source:</strong> <a href="https://github.com/modelop/moc_monitors/blob/main/src/modelop/monitors/performance.py" target="_blank" class="text-[var(--primary)] hover:underline">performance.py</a></div>
+                                </div>
+                            </div>
+                            <div class="monitor-card p-4 bg-[var(--panel-bg)] border border-[var(--border)] rounded-lg">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h4 class="font-bold text-[15px] text-[var(--text-main)]">Accuracy Monitor</h4>
+                                        <p class="text-xs text-[var(--text-light)] mt-1">Overall percentage of correct predictions</p>
+                                    </div>
+                                    <span class="inline-block px-2 py-1 text-[11px] font-bold bg-[#00a962] text-white rounded">v3.4</span>
+                                </div>
+                                <div class="text-xs text-[var(--text-light)] space-y-2 mt-3">
+                                    <div><strong>Formula:</strong> (TP + TN) / (TP + TN + FP + FN)</div>
+                                    <div><strong>Use Case:</strong> Baseline performance validation</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Regression & Diagnostics Group -->
+                    <div class="monitor-group">
+                        <div class="monitor-group-header cursor-pointer p-4 bg-[var(--panel-light)] border border-[var(--border)] rounded-lg flex items-center justify-between hover:border-[var(--primary)]" onclick="window.toggleMonitorGroup(this)">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-[24px] text-[#f59e0b]">show_chart</span>
+                                <div>
+                                    <div class="font-bold text-lg text-[var(--text-main)]">Regression & Diagnostics</div>
+                                    <div class="text-xs text-[var(--text-light)]">MAE, RMSE, R², Gini, C-Stat</div>
+                                </div>
+                            </div>
+                            <span class="material-symbols-outlined text-[var(--text-light)] transition-transform">expand_more</span>
+                        </div>
+                        <div class="monitor-group-content hidden px-6 py-4 bg-[var(--panel-light)] border border-t-0 border-[var(--border)] rounded-b-lg space-y-3">
+                            <div class="monitor-card p-4 bg-[var(--panel-bg)] border border-[var(--border)] rounded-lg">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h4 class="font-bold text-[15px] text-[var(--text-main)]">Regression Error Monitor</h4>
+                                        <p class="text-xs text-[var(--text-light)] mt-1">Tracks MAE, RMSE, and R² for continuous predictions</p>
+                                    </div>
+                                    <span class="inline-block px-2 py-1 text-[11px] font-bold bg-[#00a962] text-white rounded">v3.4</span>
+                                </div>
+                                <div class="text-xs text-[var(--text-light)] space-y-2 mt-3">
+                                    <div><strong>Metrics:</strong> Mean Absolute Error, RMSE, R-Squared</div>
+                                    <div><strong>Use Case:</strong> Credit risk, pricing models</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fairness & Bias Group -->
+                    <div class="monitor-group">
+                        <div class="monitor-group-header cursor-pointer p-4 bg-[var(--panel-light)] border border-[var(--border)] rounded-lg flex items-center justify-between hover:border-[var(--primary)]" onclick="window.toggleMonitorGroup(this)">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-[24px] text-[#8b5cf6]">balance</span>
+                                <div>
+                                    <div class="font-bold text-lg text-[var(--text-main)]">Fairness & Bias</div>
+                                    <div class="text-xs text-[var(--text-light)]">Group Metrics, Disparities, Aequitas Analysis</div>
+                                </div>
+                            </div>
+                            <span class="material-symbols-outlined text-[var(--text-light)] transition-transform">expand_more</span>
+                        </div>
+                        <div class="monitor-group-content hidden px-6 py-4 bg-[var(--panel-light)] border border-t-0 border-[var(--border)] rounded-b-lg space-y-3">
+                            <div class="monitor-card p-4 bg-[var(--panel-bg)] border border-[var(--border)] rounded-lg">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h4 class="font-bold text-[15px] text-[var(--text-main)]">Bias Monitor</h4>
+                                        <p class="text-xs text-[var(--text-light)] mt-1">Evaluates prediction disparities across protected classes</p>
+                                    </div>
+                                    <span class="inline-block px-2 py-1 text-[11px] font-bold bg-[#00a962] text-white rounded">v3.4</span>
+                                </div>
+                                <div class="text-xs text-[var(--text-light)] space-y-2 mt-3">
+                                    <div><strong>Protected Attributes:</strong> Age, Gender, Race, Ethnicity</div>
+                                    <div><strong>Tests:</strong> Predicted Positive Disparity, FDR, FOR Disparity</div>
+                                    <div><strong>Standards:</strong> OSFI E-23, Fair Lending Requirements</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Drift Detection Group -->
+                    <div class="monitor-group">
+                        <div class="monitor-group-header cursor-pointer p-4 bg-[var(--panel-light)] border border-[var(--border)] rounded-lg flex items-center justify-between hover:border-[var(--primary)]" onclick="window.toggleMonitorGroup(this)">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-[24px] text-[#3b82f6]">query_stats</span>
+                                <div>
+                                    <div class="font-bold text-lg text-[var(--text-main)]">Drift Detection</div>
+                                    <div class="text-xs text-[var(--text-light)]">KS Test, JS Divergence, KL Divergence</div>
+                                </div>
+                            </div>
+                            <span class="material-symbols-outlined text-[var(--text-light)] transition-transform">expand_more</span>
+                        </div>
+                        <div class="monitor-group-content hidden px-6 py-4 bg-[var(--panel-light)] border border-t-0 border-[var(--border)] rounded-b-lg space-y-3">
+                            <div class="monitor-card p-4 bg-[var(--panel-bg)] border border-[var(--border)] rounded-lg">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h4 class="font-bold text-[15px] text-[var(--text-main)]">Data Drift Monitor</h4>
+                                        <p class="text-xs text-[var(--text-light)] mt-1">Detects shifts in input feature distributions</p>
+                                    </div>
+                                    <span class="inline-block px-2 py-1 text-[11px] font-bold bg-[#00a962] text-white rounded">v3.4</span>
+                                </div>
+                                <div class="text-xs text-[var(--text-light)] space-y-2 mt-3">
+                                    <div><strong>Algorithms:</strong> KS, Jensen-Shannon, Kullback-Leibler</div>
+                                    <div><strong>Input:</strong> Baseline vs. Sample datasets</div>
+                                    <div><strong>Output:</strong> p-values, drift detected (boolean)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stability Group -->
+                    <div class="monitor-group">
+                        <div class="monitor-group-header cursor-pointer p-4 bg-[var(--panel-light)] border border-[var(--border)] rounded-lg flex items-center justify-between hover:border-[var(--primary)]" onclick="window.toggleMonitorGroup(this)">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-[24px] text-[#10b981]">shield_check</span>
+                                <div>
+                                    <div class="font-bold text-lg text-[var(--text-main)]">Stability Analysis</div>
+                                    <div class="text-xs text-[var(--text-light)]">PSI, CSI, Population Metrics</div>
+                                </div>
+                            </div>
+                            <span class="material-symbols-outlined text-[var(--text-light)] transition-transform">expand_more</span>
+                        </div>
+                        <div class="monitor-group-content hidden px-6 py-4 bg-[var(--panel-light)] border border-t-0 border-[var(--border)] rounded-b-lg space-y-3">
+                            <div class="monitor-card p-4 bg-[var(--panel-bg)] border border-[var(--border)] rounded-lg">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h4 class="font-bold text-[15px] text-[var(--text-main)]">Population Stability Monitor</h4>
+                                        <p class="text-xs text-[var(--text-light)] mt-1">Measures distribution changes over time</p>
+                                    </div>
+                                    <span class="inline-block px-2 py-1 text-[11px] font-bold bg-[#00a962] text-white rounded">v3.4</span>
+                                </div>
+                                <div class="text-xs text-[var(--text-light)] space-y-2 mt-3">
+                                    <div><strong>Metrics:</strong> PSI (Population Stability Index), CSI</div>
+                                    <div><strong>Thresholds:</strong> PSI &lt; 0.1 (stable), &gt; 0.25 (significant change)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Volumetric & Validation Group -->
+                    <div class="monitor-group">
+                        <div class="monitor-group-header cursor-pointer p-4 bg-[var(--panel-light)] border border-[var(--border)] rounded-lg flex items-center justify-between hover:border-[var(--primary)]" onclick="window.toggleMonitorGroup(this)">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-[24px] text-[#ef4444]">inventory_2</span>
+                                <div>
+                                    <div class="font-bold text-lg text-[var(--text-main)]">Volumetric & Validation</div>
+                                    <div class="text-xs text-[var(--text-light)]">Record Counts, Schema Checks, Data Quality</div>
+                                </div>
+                            </div>
+                            <span class="material-symbols-outlined text-[var(--text-light)] transition-transform">expand_more</span>
+                        </div>
+                        <div class="monitor-group-content hidden px-6 py-4 bg-[var(--panel-light)] border border-t-0 border-[var(--border)] rounded-b-lg space-y-3">
+                            <div class="monitor-card p-4 bg-[var(--panel-bg)] border border-[var(--border)] rounded-lg">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h4 class="font-bold text-[15px] text-[var(--text-main)]">Volumetric Monitor</h4>
+                                        <p class="text-xs text-[var(--text-light)] mt-1">Tracks record counts and data completeness</p>
+                                    </div>
+                                    <span class="inline-block px-2 py-1 text-[11px] font-bold bg-[#00a962] text-white rounded">v3.4</span>
+                                </div>
+                                <div class="text-xs text-[var(--text-light)] space-y-2 mt-3">
+                                    <div><strong>Checks:</strong> Row count, null rates, field presence</div>
+                                    <div><strong>Output:</strong> Data quality score, alerts on pipeline failure</div>
+                                </div>
+                            </div>
+                            <div class="monitor-card p-4 bg-[var(--panel-bg)] border border-[var(--border)] rounded-lg">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h4 class="font-bold text-[15px] text-[var(--text-main)]">Schema Validation Monitor</h4>
+                                        <p class="text-xs text-[var(--text-light)] mt-1">Ensures input data matches required structure</p>
+                                    </div>
+                                    <span class="inline-block px-2 py-1 text-[11px] font-bold bg-[#00a962] text-white rounded">v3.4</span>
+                                </div>
+                                <div class="text-xs text-[var(--text-light)] space-y-2 mt-3">
+                                    <div><strong>Validation:</strong> Avro schema enforcement, type checking</div>
+                                    <div><strong>Errors:</strong> Missing columns, type mismatches, range violations</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-6 bg-[var(--panel-light)] border border-[var(--border)] rounded-lg">
+                    <h4 class="font-bold text-[var(--text-main)] mb-3 flex items-center gap-2"><span class="material-symbols-outlined">info</span> Selecting the Right Monitor</h4>
+                    <p class="text-sm text-[var(--text-light)]">Use the <strong>Selection Pathway</strong> tab to map your model type (Classification, Regression, or GenAI/LLM) to the appropriate OOTB monitor. Combine multiple monitors for comprehensive governance.</p>
+                </div>
+            </section>
+
+            <!-- SECTION 8: Job Scheduling & On-Demand Execution -->
+            <section id="job-scheduling" class="page-section max-w-6xl mx-auto">
+                <div class="mb-10">
+                    <h2 class="text-3xl font-bold mb-4 tracking-tight">Job Scheduling & On-Demand Execution</h2>
+                    <p class="text-body text-lg">Execute monitors via the moc_python_sdk HttpClient API or orchestrate complex workflows using MLC/BPMN templates. Supports both scheduled and on-demand metric generation.</p>
+                </div>
+
+                <div class="space-y-8">
+                    <!-- Subsection: SDK Job Creation -->
+                    <div class="card p-6 border-l-4 border-l-[var(--primary)]">
+                        <h3 class="font-bold text-xl mb-4 text-[var(--text-main)] flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[var(--primary)]">api</span> Creating Jobs with moc_python_sdk
+                        </h3>
+                        <p class="text-sm text-body mb-4">The HttpClient provides a straightforward REST interface for job creation:</p>
+                        <div class="bg-[#1a1a1a] text-[#e5e7eb] p-4 rounded-lg overflow-x-auto mb-4">
+                            <pre><code class="language-python">from moc_python_sdk import HttpClient
+
+# Initialize secure client
+client = HttpClient(
+    endpoint="https://modelop-instance.com",
+    username="api_user",
+    password="api_token",
+    verify_ssl=True
+)
+
+# Define job payload
+job_payload = {
+    "modelTestId": "job_auc_monitor_prod_v1",
+    "monitorSnapshotId": "snapshot_auc_monitor_v2",
+    "dataAssetMappings": {
+        "baseline_data": "asset_train_dataset_v3",
+        "sample_data": "asset_prod_slice_20260416"
+    },
+    "executionContext": {
+        "priority": "HIGH",
+        "timeout_seconds": 1800,
+        "email_on_complete": "ml-team@company.com"
+    }
+}
+
+# Create the job
+response = client.create_job(payload=job_payload)
+job_id = response['id']
+job_status = response['status']  # 'CREATED', 'RUNNING', 'COMPLETED'</code></pre>
+                        </div>
+                        <div class="space-y-3 text-sm text-[var(--text-light)]">
+                            <div><strong class="text-[var(--text-main)]">Required Fields:</strong> modelTestId, monitorSnapshotId, dataAssetMappings</div>
+                            <div><strong class="text-[var(--text-main)]">Optional:</strong> executionContext (priority, timeout, notifications)</div>
+                            <div><strong class="text-[var(--text-main)]">Environment:</strong> Set MODELOP_ENDPOINT, MODELOP_OAUTH_SCOPE, MODELOP_VERIFY_SSL</div>
+                        </div>
+                    </div>
+
+                    <!-- Subsection: MLC/BPMN Orchestration -->
+                    <div class="card p-6 border-l-4 border-l-[#3b82f6]">
+                        <h3 class="font-bold text-xl mb-4 text-[var(--text-main)] flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[#3b82f6]">flow_chart</span> MLC/BPMN Subprocess Patterns
+                        </h3>
+                        <p class="text-sm text-body mb-4">Complex monitoring workflows can be orchestrated using Camunda BPMN 2.0 subprocesses:</p>
+                        <div class="bg-[#1a1a1a] text-[#e5e7eb] p-4 rounded-lg overflow-x-auto mb-4">
+                            <pre><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"&gt;
+  &lt;bpmn:process id="monitor_orchestration"&gt;
+    &lt;bpmn:startEvent id="start" /&gt;
+    
+    &lt;bpmn:callActivity id="spawn_job" 
+                         calledElement="create_monitor_job"&gt;
+      &lt;bpmn:ioMapping&gt;
+        &lt;bpmn:inputParameter name="monitorId"&gt;${monitorSnapshot}&lt;/bpmn:inputParameter&gt;
+        &lt;bpmn:outputParameter name="jobId"&gt;${job_response.id}&lt;/bpmn:outputParameter&gt;
+      &lt;/bpmn:ioMapping&gt;
+    &lt;/bpmn:callActivity&gt;
+    
+    &lt;bpmn:boundaryEvent id="timeout_handler" 
+                          attachedToRef="spawn_job" 
+                          timerEventDefinition&gt;
+      &lt;bpmn:timerEventDefinition&gt;
+        &lt;bpmn:timeDuration&gt;PT30M&lt;/bpmn:timeDuration&gt;
+      &lt;/bpmn:timerEventDefinition&gt;
+    &lt;/bpmn:boundaryEvent&gt;
+    
+    &lt;bpmn:endEvent id="end" /&gt;
+  &lt;/bpmn:process&gt;
+&lt;/bpmn:definitions&gt;</code></pre>
+                        </div>
+                        <div class="space-y-2 text-sm text-[var(--text-light)]">
+                            <div><strong class="text-[var(--text-main)]">Service Tasks:</strong> Java Delegates invoke HttpClient.create_job()</div>
+                            <div><strong class="text-[var(--text-main)]">Boundary Events:</strong> Handle timeouts, errors, and signal triggers</div>
+                            <div><strong class="text-[var(--text-main)]">Reference:</strong> See mlc-building-blocks repository</div>
+                        </div>
+                    </div>
+
+                    <!-- Subsection: Job Monitoring -->
+                    <div class="card p-6 border-l-4 border-l-[#10b981]">
+                        <h3 class="font-bold text-xl mb-4 text-[var(--text-main)] flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[#10b981]">monitoring</span> Monitoring Job Status
+                        </h3>
+                        <p class="text-sm text-body mb-4">Query job status and retrieve results once execution completes:</p>
+                        <div class="bg-[#1a1a1a] text-[#e5e7eb] p-4 rounded-lg overflow-x-auto">
+                            <pre><code class="language-python"># Poll job status
+import time
+
+def wait_for_job(client, job_id, max_wait_seconds=1800):
+    """Wait for job completion with exponential backoff."""
+    start_time = time.time()
+    attempt = 0
+    
+    while time.time() - start_time < max_wait_seconds:
+        job_info = client.get_job_status(job_id)
+        status = job_info['status']
+        
+        if status == 'COMPLETED':
+            return job_info['results']
+        elif status == 'FAILED':
+            raise Exception(f"Job {job_id} failed: {job_info['error']}")
+        
+        # Exponential backoff: 5s, 10s, 20s, etc.
+        wait_time = min(5 * (2 ** attempt), 60)
+        time.sleep(wait_time)
+        attempt += 1
+    
+    raise TimeoutError(f"Job {job_id} did not complete within {max_wait_seconds}s")
+
+# Retrieve results
+results = wait_for_job(client, job_id)
+print(f"AUC Score: {results['auc_score']}")
+print(f"Timestamp: {results['execution_timestamp']}")</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 9: Custom Integrations & Sensor Setup -->
+            <section id="custom-integrations" class="page-section max-w-6xl mx-auto">
+                <div class="mb-10">
+                    <h2 class="text-3xl font-bold mb-4 tracking-tight">Custom Integrations & Sensor Setup</h2>
+                    <p class="text-body text-lg">Connect external data sources via datasource endpoints. Examples include Azure Blob Storage, Snowflake, and REST APIs. Follow the ETL pattern to bridge external systems with ModelOp's job execution engine.</p>
+                </div>
+
+                <div class="space-y-8">
+                    <!-- Subsection: Datasource Endpoint Architecture -->
+                    <div class="card p-6 border-l-4 border-l-[#f59e0b]">
+                        <h3 class="font-bold text-xl mb-4 text-[var(--text-main)] flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[#f59e0b]">cloud_download</span> Datasource Endpoint Architecture
+                        </h3>
+                        <p class="text-sm text-body mb-4">Endpoints define ETL bridges that extract data from external systems, transform it, and load it into ModelOp:</p>
+                        <div class="bg-[var(--panel-light)] border border-[var(--border)] p-4 rounded-lg mb-4">
+                            <div class="text-sm space-y-2">
+                                <div><strong>Extract:</strong> Query external system (S3, RDBMS, API)</div>
+                                <div><strong>Transform:</strong> Map fields, filter rows, schema validation</div>
+                                <div><strong>Load:</strong> Store as Asset in ModelOp's data catalog</div>
+                                <div><strong>Register:</strong> Link Asset to Job's dataAssetMappings</div>
+                            </div>
+                        </div>
+                        <p class="text-sm text-[var(--text-light)]">Endpoint definitions are stored in the <code class="bg-[var(--panel-bg)] px-2 py-1 rounded">datasource_endpoints/</code> directory and are reusable across multiple jobs.</p>
+                    </div>
+
+                    <!-- Subsection: Azure Connector Example -->
+                    <div class="card p-6 border-l-4 border-l-[#3b82f6]">
+                        <h3 class="font-bold text-xl mb-4 text-[var(--text-main)] flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[#3b82f6]">extension</span> Example: Azure Blob Connector
+                        </h3>
+                        <p class="text-sm text-body mb-4">Production-ready Azure integration pattern:</p>
+                        <div class="bg-[#1a1a1a] text-[#e5e7eb] p-4 rounded-lg overflow-x-auto mb-4">
+                            <pre><code class="language-yaml">name: "azure_prod_data_endpoint"
+type: "AZURE_BLOB_STORAGE"
+config:
+  account_name: "mycompanydata"
+  account_key: "${AZURE_ACCOUNT_KEY}"  # Store as secret
+  container: "ml-datasets"
+  path: "prod/monitoring/sample_*.parquet"
+
+# Extract Configuration
+extract:
+  query: |
+    SELECT score, label, feature_1, feature_2, feature_3
+    FROM prod_batch
+    WHERE date >= DATEADD(day, -7, CAST(GETDATE() AS DATE))
+  format: "parquet"
+  partition_by: "date"
+
+# Transform Configuration
+transform:
+  - drop_columns: ["internal_id", "debug_flag"]
+  - rename_fields:
+      "model_score": "score_column"
+      "actual_value": "label_column"
+  - type_conversion:
+      score_column: "float"
+      label_column: "integer"
+  - filter: "score_column IS NOT NULL AND label_column IS NOT NULL"
+
+# Load Configuration
+load:
+  asset_name: "asset_azure_prod_7day_v1"
+  asset_role: "SAMPLE_DATA"
+  storage_location: "s3://modelop-assets/azure_imports/"</code></pre>
+                        </div>
+                        <div class="text-sm text-[var(--text-light)] space-y-2">
+                            <div><strong class="text-[var(--text-main)]">Authentication:</strong> Use environment secrets, not hardcoded keys</div>
+                            <div><strong class="text-[var(--text-main)]">Scheduling:</strong> Pair with Airflow/Prefect for daily updates</div>
+                            <div><strong class="text-[var(--text-main)]">Source:</strong> See <code class="bg-[var(--panel-bg)] px-2 py-1 rounded">datasource_endpoints/STABLE/azure_example/</code></div>
+                        </div>
+                    </div>
+
+                    <!-- Subsection: Custom Sensor Integration -->
+                    <div class="card p-6 border-l-4 border-l-[#8b5cf6]">
+                        <h3 class="font-bold text-xl mb-4 text-[var(--text-main)] flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[#8b5cf6]">sensors</span> Custom Sensor & Red-Teaming Setup
+                        </h3>
+                        <p class="text-sm text-body mb-4">Integrate custom sensors for adversarial testing and PII detection:</p>
+                        <div class="bg-[#1a1a1a] text-[#e5e7eb] p-4 rounded-lg overflow-x-auto">
+                            <pre><code class="language-python"># PII Detection Sensor
+import re
+from modelop.schema import infer
+
+def init(init_param):
+    global PII_PATTERNS
+    # Common PII regex patterns
+    PII_PATTERNS = {
+        'ssn': r'\d{3}-\d{2}-\d{4}',
+        'email': r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}',
+        'credit_card': r'\b(?:\d{4}[-\s]?){3}\d{4}\b',
+        'phone': r'\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b'
+    }
+
+def metrics(data: pd.DataFrame):
+    """Scans all string columns for PII patterns."""
+    pii_findings = {}
+    
+    for col in data.select_dtypes(include=['object']).columns:
+        for pii_type, pattern in PII_PATTERNS.items():
+            matches = data[col].astype(str).str.contains(pattern, regex=True).sum()
+            if matches > 0:
+                pii_findings[f"{col}_{pii_type}_count"] = matches
+                pii_findings[f"{col}_{pii_type}_flag"] = "ALERT"
+    
+    yield {
+        "total_pii_instances": sum(pii_findings.values()),
+        "details": pii_findings,
+        "severity": "CRITICAL" if pii_findings else "PASS"
+    }</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 10: SDK Integration & Result Querying -->
+            <section id="sdk-integration" class="page-section max-w-6xl mx-auto">
+                <div class="mb-10">
+                    <h2 class="text-3xl font-bold mb-4 tracking-tight">SDK Integration & Result Querying</h2>
+                    <p class="text-body text-lg">The moc_python_sdk provides comprehensive REST API bindings for all platform operations including schema generation, result querying, and notification management.</p>
+                </div>
+
+                <div class="space-y-8">
+                    <!-- Subsection: HttpClient Configuration -->
+                    <div class="card p-6 border-l-4 border-l-[var(--primary)]">
+                        <h3 class="font-bold text-xl mb-4 text-[var(--text-main)] flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[var(--primary)]">settings</span> HttpClient Configuration
+                        </h3>
+                        <p class="text-sm text-body mb-4">Initialize the SDK client with secure and unsecured modes:</p>
+                        <div class="bg-[#1a1a1a] text-[#e5e7eb] p-4 rounded-lg overflow-x-auto mb-4">
+                            <pre><code class="language-python">from moc_python_sdk import HttpClient
+import os
+
+# SECURE MODE (Production)
+client_secure = HttpClient(
+    endpoint=os.getenv("MODELOP_ENDPOINT"),
+    username=os.getenv("MODELOP_USERNAME"),
+    password=os.getenv("MODELOP_PASSWORD"),
+    verify_ssl=os.getenv("MODELOP_VERIFY_SSL", "true") == "true"
+)
+
+# UNSECURED MODE (Development)
+client_dev = HttpClient(
+    endpoint="http://localhost:8090",
+    verify_ssl=False
+)
+
+# Configuration via Environment Variables
+# MODELOP_ENDPOINT: Base URL
+# MODELOP_OAUTH_SCOPE: OAuth scope (if applicable)
+# MODELOP_VERIFY_SSL: SSL certificate verification
+# MODELOP_TIMEOUT_SECONDS: Request timeout</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- Subsection: Model Test Result Querying -->
+                    <div class="card p-6 border-l-4 border-l-[#10b981]">
+                        <h3 class="font-bold text-xl mb-4 text-[var(--text-main)] flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[#10b981]">search</span> Querying Model Test Results
+                        </h3>
+                        <p class="text-sm text-body mb-4">Retrieve and analyze monitor execution results:</p>
+                        <div class="bg-[#1a1a1a] text-[#e5e7eb] p-4 rounded-lg overflow-x-auto mb-4">
+                            <pre><code class="language-python"># Query results by Model ID
+results = client.get_model_test_results(
+    modelId="model_v2",
+    limit=100,
+    offset=0,
+    sort_by="execution_timestamp",
+    sort_order="DESC"
+)
+
+# Parse results
+for result in results:
+    print(f"Model: {result['model_id']}")
+    print(f"Monitor: {result['monitor_id']}")
+    print(f"Status: {result['status']}")  # PASS, FAIL, ERROR
+    print(f"Metrics: {result['metrics_json']}")
+    print(f"Timestamp: {result['execution_timestamp']}")
+    print("---")
+
+# Query by stored model
+stored_model_results = client.get_model_test_results_by_stored_model_id(
+    storedModelId="sm_12345",
+    days_back=7
+)</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- Subsection: Notifications -->
+                    <div class="card p-6 border-l-4 border-l-[#f59e0b]">
+                        <h3 class="font-bold text-xl mb-4 text-[var(--text-main)] flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[#f59e0b]">notifications</span> Notification Management
+                        </h3>
+                        <p class="text-sm text-body mb-4">Subscribe to job completion and failure notifications:</p>
+                        <div class="bg-[#1a1a1a] text-[#e5e7eb] p-4 rounded-lg overflow-x-auto">
+                            <pre><code class="language-python"># Retrieve notifications
+notifications = client.get_notifications_by_stored_model_id(
+    storedModelId="sm_12345",
+    notification_type="JOB_COMPLETED"
+)
+
+# Process alerts
+alerts = client.get_notifications_by_stored_model_id(
+    storedModelId="sm_12345",
+    notification_type="THRESHOLD_EXCEEDED"
+)
+
+for alert in alerts:
+    print(f"Alert: {alert['message']}")
+    print(f"Severity: {alert['severity']}")  # INFO, WARNING, CRITICAL
+    print(f"Metric: {alert['metric_name']}")
+    print(f"Threshold: {alert['threshold']}")
+    print(f"Actual Value: {alert['actual_value']}")</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- Subsection: Schema Generation -->
+                    <div class="card p-6 border-l-4 border-l-[#8b5cf6]">
+                        <h3 class="font-bold text-xl mb-4 text-[var(--text-main)] flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[#8b5cf6]">schema</span> Schema Generation & Inference
+                        </h3>
+                        <p class="text-sm text-body mb-4">Auto-generate Avro schemas from data assets:</p>
+                        <div class="bg-[#1a1a1a] text-[#e5e7eb] p-4 rounded-lg overflow-x-auto">
+                            <pre><code class="language-python">from moc_python_sdk import schema_infer
+
+# Infer from DataFrame
+df_schema = schema_infer.infer_schema_from_dataframe(
+    df=df_sample,
+    primary_keys=["id"],
+    required_fields=["score", "label"]
+)
+
+# Generate Avro specification
+avro_spec = schema_infer.generate_avro_spec(
+    schema_dict=df_schema,
+    namespace="com.company.models",
+    doc="Production monitoring schema"
+)
+
+print(avro_spec)</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 11: MCP Services & Extensions -->
+            <section id="mcp-services" class="page-section max-w-6xl mx-auto">
+                <div class="mb-10">
+                    <h2 class="text-3xl font-bold mb-4 tracking-tight">MCP Services & Extensions</h2>
+                    <p class="text-body text-lg">Extend ModelOp's capabilities using the Model Context Protocol (MCP). MCP enables secure tool integration, custom services, and seamless agent orchestration.</p>
+                </div>
+
+                <div class="space-y-8">
+                    <!-- Subsection: MCP Overview -->
+                    <div class="card p-6 border-l-4 border-l-[var(--primary)]">
+                        <h3 class="font-bold text-xl mb-4 text-[var(--text-main)] flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[var(--primary)]">extension</span> Model Context Protocol (MCP) Overview
+                        </h3>
+                        <p class="text-sm text-body mb-4">MCP provides a standardized interface for tools and services to integrate with ModelOp's agent framework:</p>
+                        <div class="bg-[var(--panel-light)] border border-[var(--border)] p-4 rounded-lg mb-4">
+                            <div class="text-sm space-y-2">
+                                <div><strong>Protocol:</strong> JSON-RPC 2.0 over stdio, HTTP, or WebSocket</div>
+                                <div><strong>Server Role:</strong> Exposes tools and resources</div>
+                                <div><strong>Client Role:</strong> Consumes tools via agents</div>
+                                <div><strong>Authentication:</strong> OAuth2, API keys, mTLS</div>
+                            </div>
+                        </div>
+                        <p class="text-sm text-[var(--text-light)]">MCP separates concerns: Agents remain stateless while Services manage state and integrate with external systems.</p>
+                    </div>
+
+                    <!-- Subsection: Available SDKs -->
+                    <div class="card p-6 border-l-4 border-l-[#3b82f6]">
+                        <h3 class="font-bold text-xl mb-4 text-[var(--text-main)] flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[#3b82f6]">code</span> MCP SDKs & Support
+                        </h3>
+                        <p class="text-sm text-body mb-4">Official MCP SDKs are available for multiple languages:</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div class="p-4 bg-[var(--panel-bg)] border border-[var(--border)] rounded-lg">
+                                <div class="font-bold text-[var(--text-main)] mb-2">Python SDK</div>
+                                <div class="text-xs text-[var(--text-light)]">
+                                    <div><code>pip install mcp-sdk</code></div>
+                                    <div class="mt-2">Full feature parity with Node.js</div>
+                                </div>
+                            </div>
+                            <div class="p-4 bg-[var(--panel-bg)] border border-[var(--border)] rounded-lg">
+                                <div class="font-bold text-[var(--text-main)] mb-2">TypeScript/JavaScript</div>
+                                <div class="text-xs text-[var(--text-light)]">
+                                    <div><code>npm install @modelop/mcp-sdk</code></div>
+                                    <div class="mt-2">Preferred for browser-based tools</div>
+                                </div>
+                            </div>
+                            <div class="p-4 bg-[var(--panel-bg)] border border-[var(--border)] rounded-lg">
+                                <div class="font-bold text-[var(--text-main)] mb-2">Java SDK</div>
+                                <div class="text-xs text-[var(--text-light)]">
+                                    <div><code>&lt;groupId&gt;com.modelop&lt;/groupId&gt;</code></div>
+                                    <div class="mt-2">Enterprise integration patterns</div>
+                                </div>
+                            </div>
+                            <div class="p-4 bg-[var(--panel-bg)] border border-[var(--border)] rounded-lg">
+                                <div class="font-bold text-[var(--text-main)] mb-2">Kotlin SDK</div>
+                                <div class="text-xs text-[var(--text-light)]">
+                                    <div><code>gradle: com.modelop:mcp-kotlin</code></div>
+                                    <div class="mt-2">Modern JVM development</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Subsection: Custom Service Template -->
+                    <div class="card p-6 border-l-4 border-l-[#10b981]">
+                        <h3 class="font-bold text-xl mb-4 text-[var(--text-main)] flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[#10b981]">build</span> Building a Custom MCP Service
+                        </h3>
+                        <p class="text-sm text-body mb-4">Template for a custom MCP server that provides tools for model monitoring:</p>
+                        <div class="bg-[#1a1a1a] text-[#e5e7eb] p-4 rounded-lg overflow-x-auto mb-4">
+                            <pre><code class="language-python">from mcp import Server, Tool, Resource
+from mcp.server.stdio import StdioServerTransport
+
+server = Server("model-monitoring-service")
+
+@server.tool()
+def create_monitor_job(model_id: str, monitor_type: str, data_asset: str):
+    """Create a new monitoring job via MCP."""
+    from moc_python_sdk import HttpClient
+    
+    client = HttpClient(endpoint=os.getenv("MODELOP_ENDPOINT"))
+    job_response = client.create_job({
+        "modelTestId": f"job_{model_id}_{monitor_type}",
+        "monitorSnapshotId": f"snapshot_{monitor_type}_latest",
+        "dataAssetMappings": {"sample_data": data_asset}
+    })
+    
+    return {
+        "job_id": job_response['id'],
+        "status": job_response['status'],
+        "created_at": job_response['created_timestamp']
+    }
+
+@server.tool()
+def query_recent_results(model_id: str, days_back: int = 7):
+    """Query monitoring results from the past N days."""
+    client = HttpClient(endpoint=os.getenv("MODELOP_ENDPOINT"))
+    results = client.get_model_test_results(modelId=model_id, limit=100)
+    
+    # Filter by date
+    from datetime import datetime, timedelta
+    cutoff_date = datetime.now() - timedelta(days=days_back)
+    
+    filtered = [r for r in results 
+                if datetime.fromisoformat(r['execution_timestamp']) > cutoff_date]
+    
+    return {"count": len(filtered), "results": filtered}
+
+@server.resource()
+def get_monitor_status(model_id: str):
+    """Expose monitor status as a resource for agent inspection."""
+    client = HttpClient(endpoint=os.getenv("MODELOP_ENDPOINT"))
+    status = client.get_model_status(model_id)
+    return status
+
+# Serve the MCP protocol
+async def main():
+    transport = StdioServerTransport()
+    await server.run(transport)
+
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(main())</code></pre>
+                        </div>
+                        <div class="text-sm text-[var(--text-light)] space-y-2">
+                            <div><strong class="text-[var(--text-main)]">Tools:</strong> Executable functions agents can call</div>
+                            <div><strong class="text-[var(--text-main)]">Resources:</strong> Read-only data sources agents can query</div>
+                            <div><strong class="text-[var(--text-main)]">Error Handling:</strong> Proper exception propagation via JSON-RPC</div>
+                        </div>
+                    </div>
+
+                    <!-- Subsection: Agent Integration -->
+                    <div class="card p-6 border-l-4 border-l-[#f59e0b]">
+                        <h3 class="font-bold text-xl mb-4 text-[var(--text-main)] flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[#f59e0b]">psychology</span> Integrating Services with Agents
+                        </h3>
+                        <p class="text-sm text-body mb-4">Agents automatically discover MCP tools and route requests:</p>
+                        <div class="bg-[#1a1a1a] text-[#e5e7eb] p-4 rounded-lg overflow-x-auto">
+                            <pre><code class="language-python"># Agent configuration discovers MCP services
+# services.json or environment configuration:
+{
+  "mcp_servers": [
+    {
+      "name": "model-monitoring-service",
+      "command": "python",
+      "args": ["/path/to/monitoring_mcp_server.py"],
+      "env": {
+        "MODELOP_ENDPOINT": "https://modelop.company.com",
+        "MODELOP_USERNAME": "${AGENT_USERNAME}",
+        "MODELOP_PASSWORD": "${AGENT_PASSWORD}"
+      }
+    }
+  ]
+}
+
+# Agent invokes tools discovered from MCP
+# Example: "Create a monitoring job for model_v2 with drift detection"
+# Agent:
+#   1. Discovers "create_monitor_job" tool from model-monitoring-service
+#   2. Calls with parameters: model_id="model_v2", monitor_type="drift"
+#   3. Receives job_id, status from tool response
+#   4. Chains additional tools (e.g., query_recent_results)</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- Subsection: Deployment -->
+                    <div class="card p-6 border-l-4 border-l-[#8b5cf6]">
+                        <h3 class="font-bold text-xl mb-4 text-[var(--text-main)] flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[#8b5cf6]">cloud_upload</span> Deploying MCP Services
+                        </h3>
+                        <p class="text-sm text-body mb-4">MCP services can be deployed in various environments:</p>
+                        <div class="space-y-3 mt-4">
+                            <div class="p-3 bg-[var(--panel-bg)] border border-[var(--border)] rounded-lg">
+                                <div class="font-bold text-sm text-[var(--text-main)]">Docker Container</div>
+                                <div class="text-xs text-[var(--text-light)] mt-1">Containerized service with MCP protocol support via stdio or TCP</div>
+                            </div>
+                            <div class="p-3 bg-[var(--panel-bg)] border border-[var(--border)] rounded-lg">
+                                <div class="font-bold text-sm text-[var(--text-main)]">Kubernetes Service</div>
+                                <div class="text-xs text-[var(--text-light)] mt-1">Deploy as Deployment with ingress for HTTP MCP endpoints</div>
+                            </div>
+                            <div class="p-3 bg-[var(--panel-bg)] border border-[var(--border)] rounded-lg">
+                                <div class="font-bold text-sm text-[var(--text-main)]">AWS Lambda</div>
+                                <div class="text-xs text-[var(--text-light)] mt-1">Serverless MCP handlers for event-driven monitoring</div>
                             </div>
                         </div>
                     </div>
@@ -858,8 +1704,8 @@
         // --- Slide Export Engine (HTML2Canvas) ---
         window.generateSlideContentFromNodes = function(selectedSet, detailsMap, defaultTitle, defaultDesc, containerSelector) {
             if (selectedSet.size === 0) {
-                const visibleNodeElems = document.querySelectorAll(`${containerSelector} .node`);
-                const visibleIds = Array.from(visibleNodeElems).map(el => el.getAttribute('id'));
+                const visibleNodeElems = document.querySelectorAll(`${containerSelector} .node, ${containerSelector} .edge`);
+                const visibleIds = Array.from(visibleNodeElems).map(el => el.getAttribute('id')).filter(id => id && detailsMap[id]);
                 
                 let html = `<div style="margin-bottom:15px; color: ${window.isDarkMode ? '#e5e7eb' : '#1e293b'};"><b>${defaultTitle}</b><br><span style="color: ${window.isDarkMode ? '#9ca3af' : '#475569'};">${defaultDesc}</span></div><div style="font-size:12px; display:flex; flex-direction:column; gap:10px; max-height:450px; padding-right:10px; overflow-y:auto;">`;
                 
@@ -918,7 +1764,6 @@
 
             const activeTab = document.querySelector('.page-section.active').id;
             visualArea.innerHTML = '';
-            let targetSVG = null;
             
             if (activeTab === 'dashboard') {
                 insetTitle.innerText = "Value Proposition";
@@ -944,22 +1789,20 @@
                 const info = window.generateSlideContentFromNodes(window.selectedNodesPathway, window.pathwayDetails, "Selection Pathway", "Selecting the right AI monitor requires mapping the technical model type and data characteristics directly to enterprise business outcomes.", "#pathway-canvas");
                 insetTitle.innerText = info.title;
                 insetContent.innerHTML = info.content; 
-                targetSVG = document.querySelector('#pathway-canvas svg');
-                window.processSVGForSlide(targetSVG, visualArea);
+                window.processSVGForSlide(document.querySelector('#pathway-canvas svg'), visualArea);
             }
             else if (activeTab === 'architecture') {
                 if (!document.getElementById('arch-standard-container').classList.contains('hidden')) {
                     const info = window.generateSlideContentFromNodes(window.selectedNodesErd, window.erdDetails, "Execution Architecture", "Orchestration combines Business Model context, Monitor assets, and Data references.", "#erd-canvas");
                     insetTitle.innerText = info.title;
                     insetContent.innerHTML = info.content;
-                    targetSVG = document.querySelector('#erd-canvas svg');
+                    window.processSVGForSlide(document.querySelector('#erd-canvas svg'), visualArea);
                 } else {
-                    const info = window.generateSlideContentFromNodes(window.selectedNodesAgentic, window.agenticErdDetails, "Agentic Architecture", "Orchestration of Foundation Models, Tooling, and continuous telemetry monitoring.", "#erd-agentic-canvas");
+                    const info = window.generateSlideContentFromNodes(window.selectedNodesAgentic, window.agenticErdDetails, "Agentic Architecture", "Orchestration of Agent Workflows, Discovery Services, Tooling, and continuous telemetry.", "#erd-agentic-canvas");
                     insetTitle.innerText = info.title;
                     insetContent.innerHTML = info.content;
-                    targetSVG = document.querySelector('#erd-agentic-canvas svg');
+                    window.processSVGForSlide(document.querySelector('#erd-agentic-canvas svg'), visualArea);
                 }
-                window.processSVGForSlide(targetSVG, visualArea);
             }
             else if (activeTab === 'artifacts') {
                 insetTitle.innerText = "Monitor Artifacts";
@@ -999,16 +1842,28 @@
             
             const clonedSvg = svgElement.cloneNode(true);
             
-            // Clean up dynamic styles applied by pan/zoom
+            // Clean up dynamic styles applied by pan/zoom (DO NOT strip the Graphviz <g> transform)
             clonedSvg.style.transform = ''; 
             clonedSvg.style.width = '100%';
             clonedSvg.style.height = '100%';
             clonedSvg.style.maxWidth = '100%';
             clonedSvg.style.maxHeight = '100%';
             
-            // Remove hardcoded width/height attributes so viewBox scales it inside the flex container correctly
-            clonedSvg.removeAttribute('width');
-            clonedSvg.removeAttribute('height');
+            // Extract the intrinsic dimensions from the Graphviz viewBox
+            let svgWidth = 800;
+            let svgHeight = 600;
+            const viewBox = clonedSvg.getAttribute('viewBox');
+            if (viewBox) {
+                const parts = viewBox.split(' ');
+                if (parts.length === 4) {
+                    svgWidth = parseFloat(parts[2]);
+                    svgHeight = parseFloat(parts[3]);
+                }
+            }
+            
+            // Explicitly set pixel dimensions for the clone so html2canvas renders it instead of ignoring it
+            clonedSvg.setAttribute('width', `${svgWidth}px`);
+            clonedSvg.setAttribute('height', `${svgHeight}px`);
             
             // Clean text/stroke colors for slide environment mapping
             if(window.isDarkMode) {
@@ -1028,10 +1883,10 @@
             visualArea.innerHTML = '';
             visualArea.appendChild(clonedSvg);
             
-            // Wait for the layout to paint, and then trigger the canvas capture natively
+            // Wait for the layout to paint, and then trigger the canvas capture
             setTimeout(() => {
                 window.triggerHtml2Canvas();
-            }, 500);
+            }, 300);
         };
 
         window.triggerHtml2Canvas = function() {
@@ -1043,11 +1898,28 @@
                     logging: false,
                     useCORS: true
                 }).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = 'ModelOp_Slide.png';
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                    window.showToast("Slide downloaded successfully!");
+                    const dataUrl = canvas.toDataURL('image/png');
+                    
+                    // Secure iframe detection (Confluence cross-origin safety)
+                    let inIframe = false;
+                    try {
+                        inIframe = window.self !== window.top;
+                    } catch (e) {
+                        inIframe = true; // Cross-origin error means we are definitely in an iframe
+                    }
+                    
+                    if (inIframe) {
+                        document.getElementById('fallback-download-img').src = dataUrl;
+                        document.getElementById('download-fallback-modal').classList.remove('hidden');
+                        document.getElementById('download-fallback-modal').classList.add('flex');
+                        window.showToast("Slide generated! Please save manually.");
+                    } else {
+                        const link = document.createElement('a');
+                        link.download = 'ModelOp_Slide.png';
+                        link.href = dataUrl;
+                        link.click();
+                        window.showToast("Slide downloaded successfully!");
+                    }
                 }).catch(err => {
                     console.error('Slide generation error:', err);
                     window.showToast("Failed to generate slide.", "error");
@@ -1168,7 +2040,7 @@
                 updateTransform();
             });
             wrapper.addEventListener('mousedown', (e) => {
-                if(e.target.closest('.node')) return;
+                if(e.target.closest('.node') || e.target.closest('.edge')) return;
                 state.isDragging = true;
                 state.startX = e.clientX - state.translateX;
                 state.startY = e.clientY - state.translateY;
@@ -1319,17 +2191,49 @@
             'MT_MOCK': { title: 'example_job.json', text: 'A local development file simulating the ModelOp Job payload.', sys: 'Local Dev Asset' },
             'MT_MD': { title: 'readme.md', text: 'Documentation describing the monitor.', sys: 'modelop.monitor.docs' },
             'BM_SCH': { title: 'Model Schema (Avro)', text: 'Defines the specific fields in a models dataset, including the datatype and role (e.g., predictor, label, score).', sys: 'modelop.schema' },
-            'BM_REF': { title: 'Data Set References', text: 'Pointers to where the training/baseline and production comparator data physically resides.', sys: 'modelop.data.reference' }
+            'BM_REF': { title: 'Data Set References', text: 'Pointers to where the training/baseline and production comparator data physically resides.', sys: 'modelop.data.reference' },
+            'E_UC_BM': { title: 'Association', text: 'Links the Use Case to the Business Model snapshot.', sys: 'Logical Flow' },
+            'E_BM_JOB': { title: 'Job Dispatch', text: 'Triggers the creation of the execution Job from the Business Model.', sys: 'Execution Flow' },
+            'E_JOB_BM': { title: 'Monitor Results', text: 'Model Test Result (Metadata only) is sent back and attached to the Business Model.', sys: 'Data Flow' },
+            'E_JOB_RT_ART': { title: 'Model Artifacts Info in Job', text: 'Sends schema and data references required for the job to the runtime.', sys: 'Data Flow' },
+            'E_RT_JOB_OUT': { title: 'Job Output', text: 'The Job receives execution output from the Runtime.', sys: 'Data Flow' },
+            'E_JOB_RT_AST': { title: 'Monitor\'s Assets', text: 'Assets such as source code, metadata.json, required_assets.json are injected into the Runtime.', sys: 'Data Flow' },
+            'E_MT_JOB': { title: 'Monitor Configs', text: 'Passes the logical configuration into the Job orchestrator.', sys: 'Execution Flow' },
+            'E_DS_RT': { title: 'Business Data Handling', text: 'Data is streamed into the Runtime\'s memory, processed, and released.', sys: 'Data Stream' }
         };
 
         window.agenticErdDetails = {
             'AG_UC': { title: 'Agentic Use Case', text: 'The overarching business initiatives and workflows delegated to the autonomous agent.', sys: 'modelop.usecase.agent' },
-            'AG_ORCH': { title: 'Agent Orchestrator', text: 'The core logic managing planning, tool routing, and multi-step execution paths.', sys: 'modelop.agent.orchestrator' },
-            'AG_A2A': { title: 'A2A Ensemble Pattern', text: 'Agent-to-Agent architecture composing multiple specialized child agents to solve complex tasks.', sys: 'modelop.agent.ensemble' },
-            'AG_FM': { title: 'Foundation & Vendor LLMs', text: 'The core generative models (e.g., OpenAI, Anthropic, AWS Bedrock) powering reasoning.', sys: 'modelop.llm.foundation' },
-            'AG_TOOLS': { title: 'MCP Server & Tools', text: 'External integrations, RAG vector databases, and business APIs accessible by the agent.', sys: 'modelop.agent.mcp' },
-            'AG_GRD': { title: 'Guardrail Components', text: 'Safety classifiers, policy compliance checks, and input/output validation layers.', sys: 'modelop.agent.guardrail' },
-            'AG_MON': { title: 'LLM Monitoring Package', text: 'Continuous evaluation of prompts, completions, toxicity, hallucinations, latency, and cost.', sys: 'modelop.monitor.llm' }
+            'BM': { title: 'Business Model (Agent Orchestrator)', text: 'The core reasoning logic functioning as the Business Model. It manages planning, tool routing, and multi-step execution paths.', sys: 'modelop.agent.orchestrator' },
+            'MT': { title: 'LLM Monitoring Package', text: 'The comprehensive Monitor/Test suite evaluating prompt injections, completions, toxicity, hallucinations, latency, and cost.', sys: 'modelop.monitor.llm' },
+            'AG_TEST': { title: 'Automated Testing Analysis', text: 'Agentic-enabled workflows that autonomously evaluate test results.', sys: 'modelop.agent.testing' },
+            'AG_INTAKE': { title: 'Auto-Fill Intake Form', text: 'Ingests and reviews model documentation to automatically populate intake forms.', sys: 'modelop.agent.intake' },
+            'AG_DOCS': { title: 'Auto-Gen Documentation', text: 'Generates documentation templates automatically from inventory records.', sys: 'modelop.agent.docs' },
+            'AG_RISK': { title: 'Auto-Map Risks', text: 'Maps identified risks based on the organization\'s internal Policy documents.', sys: 'modelop.agent.risk' },
+            'Job': { title: 'ModelOp Job', text: 'The orchestrator. It unites the Agentic Business Model context, LLM Monitors, and Data constraints into a single operational instruction.', sys: 'modelop.job.metrics' },
+            'RT': { title: 'Monitoring Runtime', text: 'The containerized execution layer. It processes the Job, providing the environment for the Agent loop to trigger API calls securely.', sys: 'modelop.engine.java' },
+            'DS': { title: 'Data Systems', text: 'The external databases, Vector Stores, and Logging locations accessed during the execution run.', sys: 'Enterprise Infrastructure' },
+            'E_UC_BM': { title: 'Association', text: 'Associates the Use Case to the specific Agent Orchestrator.', sys: 'Logical Flow' },
+            'E_BM_TEST': { title: 'Executes Workflow', text: 'Orchestrator initiates Automated Testing Analysis workflow.', sys: 'Agentic Flow' },
+            'E_BM_INTAKE': { title: 'Executes Workflow', text: 'Orchestrator initiates Intake Form auto-fill workflow.', sys: 'Agentic Flow' },
+            'E_BM_DOCS': { title: 'Executes Workflow', text: 'Orchestrator initiates Documentation Generation workflow.', sys: 'Agentic Flow' },
+            'E_BM_RISK': { title: 'Executes Workflow', text: 'Orchestrator initiates Risk Mapping workflow.', sys: 'Agentic Flow' },
+            'E_TEST_JOB': { title: 'Unifies at Job', text: 'Agentic workflow unified and executed via Job.', sys: 'Execution Flow' },
+            'E_INTAKE_JOB': { title: 'Unifies at Job', text: 'Agentic workflow unified and executed via Job.', sys: 'Execution Flow' },
+            'E_DOCS_JOB': { title: 'Unifies at Job', text: 'Agentic workflow unified and executed via Job.', sys: 'Execution Flow' },
+            'E_RISK_JOB': { title: 'Unifies at Job', text: 'Agentic workflow unified and executed via Job.', sys: 'Execution Flow' },
+            'E_BM_JOB': { title: 'Job Dispatch', text: 'Triggers the creation of the execution Job from the Agent Orchestrator.', sys: 'Execution Flow' },
+            'E_JOB_BM': { title: 'Agent Results', text: 'Returns the completed agent tasks and artifacts.', sys: 'Data Flow' },
+            'E_MT_JOB': { title: 'Monitor Configs', text: 'Injects LLM specific guardrails and thresholds into the Job.', sys: 'Data Flow' },
+            'E_JOB_RT_ART': { title: 'Model Artifacts Info', text: 'Provides schema and data references required for the job.', sys: 'Data Flow' },
+            'E_RT_JOB_OUT': { title: 'Job Output', text: 'Returns the completed execution outputs.', sys: 'Data Flow' },
+            'E_JOB_RT_AST': { title: 'Monitor Assets', text: 'Sends monitor configurations/assets to the Runtime.', sys: 'Data Flow' },
+            'E_DS_RT': { title: 'Data Stream', text: 'Provides necessary vector stores, documents, and logs to the Runtime.', sys: 'Data Flow' },
+            'E_BM_MT': { title: 'Orchestrator Telemetry', text: 'Agent Orchestrator sends execution telemetry to the LLM Monitoring Package.', sys: 'Data Flow' },
+            'E_TEST_MT': { title: 'Agent Telemetry', text: 'Sub-agent sends task-specific telemetry to the LLM Monitoring Package.', sys: 'Data Flow' },
+            'E_INTAKE_MT': { title: 'Agent Telemetry', text: 'Sub-agent sends task-specific telemetry to the LLM Monitoring Package.', sys: 'Data Flow' },
+            'E_DOCS_MT': { title: 'Agent Telemetry', text: 'Sub-agent sends task-specific telemetry to the LLM Monitoring Package.', sys: 'Data Flow' },
+            'E_RISK_MT': { title: 'Agent Telemetry', text: 'Sub-agent sends task-specific telemetry to the LLM Monitoring Package.', sys: 'Data Flow' }
         };
 
         window.pathwayDetails = {
@@ -1417,45 +2321,89 @@
             const t = window.getDotTheme();
             let dotSrc = `
                 digraph G {
-                    bgcolor="transparent"; rankdir=TB; nodesep=0.5; ranksep=0.6; splines=ortho;
-                    node [fontname="Poppins", shape=box, style="filled, rounded", color="${t.primaryHex}", fontcolor="${t.nodeText}", width=2.2, height=0.6, fontsize=12];
-                    edge [fontname="Poppins", fontsize=10, color="${t.edgeColor}", fontcolor="${t.edgeColor}", penwidth=1.5];
+                    bgcolor="transparent"; rankdir=TB; nodesep=0.4; ranksep=0.6; splines=ortho;
+                    // Enforce uniform global dimensions using fixedsize=true
+                    node [fontname="Poppins", shape=box, style="filled, rounded", color="${t.primaryHex}", fillcolor="${t.primaryHex}", fontcolor="${t.nodeText}", width=2.8, height=0.8, fixedsize=true, fontsize=12];
+                    edge [fontname="Poppins", fontsize=9, color="${t.edgeColor}", fontcolor="${t.subNodeText}", penwidth=1.5];
 
-                    UC [label="Use Case", id="UC"];
-                    subgraph cluster_1 {
-                        peripheries=0; {rank=same; BM; MT;}
+                    UC [label="Use Case", id="UC", width=3.0];
             `;
             if (window.expandedNodeId === 'BM') {
                 dotSrc += `
-                        BM [label="Business Model\\n(Snapshot)", id="BM"];
-                        BM_SCH [label="Schema (Avro)", id="BM_SCH", fillcolor="${t.subNodeFill}", fontcolor="${t.subNodeText}", color="${t.edgeColor}", width=1.8, height=0.4, fontsize=10];
-                        BM_REF [label="Data References", id="BM_REF", fillcolor="${t.subNodeFill}", fontcolor="${t.subNodeText}", color="${t.edgeColor}", width=1.8, height=0.4, fontsize=10];
-                        BM -> BM_SCH [dir=none, style=dotted, weight=10]; BM -> BM_REF [dir=none, style=dotted, weight=10];
+                    subgraph cluster_bm {
+                        peripheries=0;
+                        BM [label="Business Model\\n(Implementation /\\nSnapshot)", id="BM", width=3.0];
+                        // Uniform secondary node dimensions
+                        node [width=2.4, height=0.4, fixedsize=true, fontsize=10, fillcolor="${t.subNodeFill}", fontcolor="${t.subNodeText}", color="${t.edgeColor}"];
+                        BM_SCH [label="Schema (Avro)", id="BM_SCH"];
+                        BM_REF [label="Data References", id="BM_REF"];
+                        BM -> BM_SCH [dir=none, style=dotted, weight=10]; 
+                        BM -> BM_REF [dir=none, style=dotted, weight=10];
+                    }
                 `;
-            } else { dotSrc += `BM [label="Business Model\\n(Implementation /\\nSnapshot)", id="BM"];`; }
+            } else { 
+                dotSrc += `BM [label="Business Model\\n(Implementation /\\nSnapshot)", id="BM", width=3.0];`; 
+            }
 
             if (window.expandedNodeId === 'MT') {
                 dotSrc += `
-                        MT [label="Monitor / Test", id="MT"];
-                        MT_PY [label="custom_metrics.py", id="MT_PY", fillcolor="${t.subNodeFill}", fontcolor="${t.subNodeText}", color="${t.edgeColor}", width=1.6, height=0.3, fontsize=9];
-                        MT_REQ [label="required_assets.json", id="MT_REQ", fillcolor="${t.subNodeFill}", fontcolor="${t.subNodeText}", color="${t.edgeColor}", width=1.6, height=0.3, fontsize=9];
-                        MT_META [label="metadata.json", id="MT_META", fillcolor="${t.subNodeFill}", fontcolor="${t.subNodeText}", color="${t.edgeColor}", width=1.6, height=0.3, fontsize=9];
-                        MT -> MT_PY [dir=none, style=dotted, weight=10]; MT -> MT_REQ [dir=none, style=dotted, weight=10]; MT -> MT_META [dir=none, style=dotted, weight=10];
+                    subgraph cluster_mt {
+                        peripheries=0;
+                        MT [label="Monitor / Test", id="MT", width=3.0];
+                        // Uniform secondary node dimensions
+                        node [width=2.4, height=0.4, fixedsize=true, fontsize=10, fillcolor="${t.subNodeFill}", fontcolor="${t.subNodeText}", color="${t.edgeColor}"];
+                        MT_PY [label="custom_metrics.py", id="MT_PY"];
+                        MT_REQ [label="required_assets.json", id="MT_REQ"];
+                        MT_META [label="metadata.json", id="MT_META"];
+                        MT -> MT_PY [dir=none, style=dotted, weight=10]; 
+                        MT -> MT_REQ [dir=none, style=dotted, weight=10]; 
+                        MT -> MT_META [dir=none, style=dotted, weight=10];
+                    }
                 `;
-            } else { dotSrc += `MT [label="Monitor / Test", id="MT"];`; }
+            } else { 
+                dotSrc += `MT [label="Monitor / Test", id="MT", width=3.0];`; 
+            }
 
             dotSrc += `
-                    }
+                    // Job and Runtime precisely span the width of BM, MT, and gaps (3.0 + 0.4 + 3.0 = 6.4)
+                    node [width=6.4, height=0.8, fixedsize=true, fontsize=12, fillcolor="${t.primaryHex}", fontcolor="${t.nodeText}", color="${t.primaryHex}"];
                     Job [label="Job", id="Job"];
-                    subgraph cluster_2 {
-                        peripheries=0; {rank=same; RT; DS;}
-                        RT [label="Runtime", id="RT"];
-                        DS [label="Data Systems\\n(flat files, RDBMS...)", id="DS"];
-                    }
-                    MTR [label="Test Result\\n(Attached to Model)", id="MTR"];
+                    RT [label="Runtime", id="RT"];
+                    
+                    // Reset back to primary width for Data Systems to force the "L-Shape" corner
+                    node [width=2.8];
+                    DS [label="Data Systems\\n(flat files, RDBMS / Data\\nWarehouses / Data Lake)", id="DS"];
 
-                    UC -> BM [style=invis]; BM -> Job [label=""]; MT -> Job [label=""];
-                    Job -> RT [label="Job Output", dir=both]; Job -> MTR [label="Test Result", style=dashed]; RT -> DS [label="Model's Data Sets", dir=both];
+                    // Phantom nodes for mathematically perfect grid locking
+                    node [shape=point, width=0.4, height=0.01, style=invis];
+                    MID_BM_MT;
+
+                    {rank=same; UC;}
+                    {rank=same; BM; MID_BM_MT; MT;}
+                    {rank=same; Job;}
+                    {rank=same; RT; DS;}
+
+                    // Horizontal alignment guides
+                    BM -> MID_BM_MT -> MT [style=invis, minlen=1];
+                    RT -> DS [style=invis, minlen=2];
+
+                    // Vertical alignment guides (Weights force exact centers)
+                    UC -> BM [style=invis, weight=100];
+                    MID_BM_MT -> Job -> RT [style=invis, weight=100];
+
+                    // Actual Edges (Constraint=false prevents them from breaking the math grid)
+                    UC -> BM [id="E_UC_BM", label=" Association", constraint=false];
+                    
+                    BM -> Job [id="E_BM_JOB", constraint=false, tailport=s, headport=nw];
+                    Job -> BM [id="E_JOB_BM", label="  Monitor Results\\n  (Model Test Result)", style=dashed, constraint=false, tailport=n, headport=s];
+                    
+                    MT -> Job [id="E_MT_JOB", constraint=false, tailport=s, headport=ne];
+                    
+                    Job -> RT [id="E_JOB_RT_ART", label=" Model Artifacts Info in Job\\n (schema, data references)  ", constraint=false, tailport=sw, headport=nw];
+                    RT -> Job [id="E_RT_JOB_OUT", label="   Job Output", constraint=false, tailport=n, headport=s];
+                    Job -> RT [id="E_JOB_RT_AST", label="  Monitor's Assets\\n  (e.g. source code, metadata.json,\\n  required_assets.json)", constraint=false, tailport=se, headport=ne];
+                    
+                    RT -> DS [id="E_DS_RT", label=" Model's\\nData Sets", dir=both, constraint=false];
                 }`;
 
             viz.renderSVGElement(dotSrc).then(el => window.attachInteractivity(el, 'erd-canvas', window.erdDetails, window.selectedNodesErd, 'erd-detail-title', 'erd-detail-content', 'erd-detail-system')).catch(e => console.error(e));
@@ -1466,27 +2414,92 @@
             const t = window.getDotTheme();
             let dotSrc = `
                 digraph G {
-                    bgcolor="transparent"; rankdir=TB; nodesep=0.5; ranksep=0.6; splines=ortho;
-                    node [fontname="Poppins", shape=box, style="filled, rounded", color="${t.primaryHex}", fontcolor="${t.nodeText}", width=2.4, height=0.6, fontsize=12];
-                    edge [fontname="Poppins", fontsize=10, color="${t.edgeColor}", fontcolor="${t.edgeColor}", penwidth=1.5];
+                    bgcolor="transparent"; rankdir=TB; nodesep=0.4; ranksep=0.6; splines=ortho;
+                    // Enforce uniform global dimensions using fixedsize=true
+                    node [fontname="Poppins", shape=box, style="filled, rounded", color="${t.primaryHex}", fillcolor="${t.primaryHex}", fontcolor="${t.nodeText}", height=0.8, fixedsize=true, fontsize=12];
+                    edge [fontname="Poppins", fontsize=9, color="${t.edgeColor}", fontcolor="${t.subNodeText}", penwidth=1.5];
 
-                    UC [label="Use Cases\\n(Agentic Initiatives)", id="AG_UC"];
-                    subgraph cluster_orch {
-                        peripheries=0; {rank=same; ORCH; A2A;}
-                        ORCH [label="Agent Orchestrator\\n(Planning / Routing)", id="AG_ORCH"];
-                        A2A [label="A2A Pattern\\n(Sub-Agents)", id="AG_A2A", fillcolor="${t.subNodeFill}", fontcolor="${t.subNodeText}", color="${t.edgeColor}"];
-                    }
-                    subgraph cluster_tools {
-                        peripheries=0; {rank=same; FM; TOOLS; GRD;}
-                        FM [label="Foundation LLMs\\n(Vendor / Bedrock)", id="AG_FM"];
-                        TOOLS [label="MCP Server & Tools\\n(RAG / APIs)", id="AG_TOOLS", fillcolor="${t.subNodeFill}", fontcolor="${t.subNodeText}", color="${t.edgeColor}"];
-                        GRD [label="Guardrails\\n(Safety / Policy)", id="AG_GRD", fillcolor="${t.subNodeFill}", fontcolor="${t.subNodeText}", color="${t.edgeColor}"];
-                    }
-                    MON [label="LLM Monitoring Package\\n(Quality & Metrics)", id="AG_MON"];
+                    // 1. Top Level
+                    UC [label="Use Case", id="AG_UC", width=2.4];
+                    
+                    // 2. Second Level (BM spans 2 sub-agents + gap = 2.4 + 0.4 + 2.4 = 5.2)
+                    BM [label="Business Model\\n(Agent Orchestrator)", id="BM", width=5.2];
+                    MT [label="Monitor / Test\\n(LLM Monitoring Package)", id="MT", width=5.2];
 
-                    UC -> ORCH [label=" Invokes"]; A2A -> ORCH [label=" Coordinates", dir=back, style=dashed];
-                    ORCH -> FM [label=" Prompts"]; ORCH -> TOOLS [label=" Calls"]; ORCH -> GRD [label=" Validates"];
-                    MON -> ORCH [style=dashed, dir=back, label=" Telemetry"]; MON -> FM [style=dashed, dir=back]; MON -> GRD [style=dashed, dir=back];
+                    // 3. Third Level (Sub-Agents)
+                    node [width=2.4, height=0.6, fontsize=10, fillcolor="${t.subNodeFill}", fontcolor="${t.subNodeText}", color="${t.edgeColor}"];
+                    AG_TEST [label="Automated testing\\n(Agentic analysis)", id="AG_TEST"];
+                    AG_INTAKE [label="Auto-Fill intake\\n(Doc ingest/review)", id="AG_INTAKE"];
+                    AG_DOCS [label="Auto-Gen Docs\\n(From inventory)", id="AG_DOCS"];
+                    AG_RISK [label="Auto-Map Risks\\n(Policy based)", id="AG_RISK"];
+
+                    // 4. Fourth Level (Job & Runtime span all 4 agents + 3 gaps = 4*2.4 + 3*0.4 = 10.8)
+                    node [width=10.8, height=0.8, fontsize=12, fillcolor="${t.primaryHex}", fontcolor="${t.nodeText}", color="${t.primaryHex}"];
+                    Job [label="Job", id="Job"];
+                    RT [label="Runtime", id="RT"];
+                    
+                    // 5. Fifth Level (DS on right)
+                    node [width=2.8];
+                    DS [label="Data Systems\\n(Vector DBs, Logs, etc.)", id="DS"];
+
+                    // Phantom nodes for absolute structural alignment
+                    node [shape=point, width=0.4, height=0.01, style=invis];
+                    G1; G2; G3; MID_BM_MT;
+
+                    {rank=same; UC;}
+                    {rank=same; BM; MID_BM_MT; MT;}
+                    {rank=same; AG_TEST; G1; AG_INTAKE; G2; AG_DOCS; G3; AG_RISK;}
+                    {rank=same; Job;}
+                    {rank=same; RT; DS;}
+
+                    // Horizontal spacing lock
+                    AG_TEST -> G1 -> AG_INTAKE -> G2 -> AG_DOCS -> G3 -> AG_RISK [style=invis, minlen=1];
+                    BM -> MID_BM_MT -> MT [style=invis, minlen=1];
+                    RT -> DS [style=invis, minlen=2];
+
+                    // Vertical alignment lock (Centers mathematically perfectly)
+                    UC -> AG_TEST [style=invis, weight=100]; // Anchors UC precisely to the left side over AG_TEST
+                    G1 -> BM [style=invis, dir=back, weight=100]; // Centers BM exactly over AG_TEST & AG_INTAKE
+                    G3 -> MT [style=invis, dir=back, weight=100]; // Centers MT exactly over AG_DOCS & AG_RISK
+                    G2 -> MID_BM_MT [style=invis, dir=back, weight=100]; // Centers horizontal layout
+                    G2 -> Job -> RT [style=invis, weight=100]; // Anchors Job and RT centrally under all agents
+
+                    // Visual Edges
+                    UC -> BM [id="E_UC_BM", label=" Association", constraint=false];
+                    
+                    // Light gray arrows to sub-agents
+                    edge [color="${t.edgeColor}", style=solid];
+                    BM -> AG_TEST [id="E_BM_TEST", constraint=false];
+                    BM -> AG_INTAKE [id="E_BM_INTAKE", constraint=false];
+                    BM -> AG_DOCS [id="E_BM_DOCS", constraint=false];
+                    BM -> AG_RISK [id="E_BM_RISK", constraint=false];
+
+                    // Sub-agents down to Job
+                    AG_TEST -> Job [id="E_TEST_JOB", constraint=false];
+                    AG_INTAKE -> Job [id="E_INTAKE_JOB", constraint=false];
+                    AG_DOCS -> Job [id="E_DOCS_JOB", constraint=false];
+                    AG_RISK -> Job [id="E_RISK_JOB", constraint=false];
+
+                    // Core job edges
+                    BM -> Job [id="E_BM_JOB", constraint=false, tailport=sw, headport=nw];
+                    Job -> BM [id="E_JOB_BM", label="   Agent Results", style=dashed, constraint=false, tailport=n, headport=s];
+                    
+                    MT -> Job [id="E_MT_JOB", label="  Monitor Configs", constraint=false, tailport=s, headport=ne];
+                    
+                    // 3 specific edges between Job and Runtime matching the target
+                    Job -> RT [id="E_JOB_RT_ART", constraint=false, tailport=sw, headport=nw];
+                    RT -> Job [id="E_RT_JOB_OUT", label="   Job Output", constraint=false, tailport=n, headport=s];
+                    Job -> RT [id="E_JOB_RT_AST", label="  Model Artifacts Info  ", constraint=false, tailport=se, headport=ne];
+                    
+                    RT -> DS [id="E_DS_RT", dir=both, constraint=false];
+
+                    // Telemetry dashed lines (Green)
+                    edge [style=dashed, color="${t.primaryHex}", constraint=false];
+                    BM -> MT [id="E_BM_MT"];
+                    AG_TEST -> MT [id="E_TEST_MT"];
+                    AG_INTAKE -> MT [id="E_INTAKE_MT"];
+                    AG_DOCS -> MT [id="E_DOCS_MT"];
+                    AG_RISK -> MT [id="E_RISK_MT"];
                 }`;
             viz.renderSVGElement(dotSrc).then(el => window.attachInteractivity(el, 'erd-agentic-canvas', window.agenticErdDetails, window.selectedNodesAgentic, 'erd-agentic-detail-title', 'erd-agentic-detail-content', 'erd-agentic-detail-system')).catch(e => console.error(e));
         };
@@ -1682,10 +2695,17 @@
             container.appendChild(svgElement);
             window.setupZoomPan(svgElement);
             
-            const svgNodes = container.querySelectorAll('.node');
+            const svgNodes = container.querySelectorAll('.node, .edge');
+
+            container.querySelectorAll('.edge').forEach(e => {
+                e.style.cursor = 'pointer';
+                e.style.transition = 'opacity 0.2s';
+                e.addEventListener('mouseenter', () => e.style.opacity = '0.7');
+                e.addEventListener('mouseleave', () => e.style.opacity = '1');
+            });
 
             svgElement.addEventListener('click', (e) => {
-                const clickedNode = e.target.closest('.node');
+                const clickedNode = e.target.closest('.node, .edge');
                 if (!clickedNode) {
                     if (containerId === 'erd-canvas' && window.expandedNodeId !== null) {
                         window.expandedNodeId = null;
@@ -1694,7 +2714,7 @@
                     selectedSet.clear();
                     svgNodes.forEach(n => n.style.opacity = '1');
                     document.getElementById(titleId).innerText = "Overview";
-                    document.getElementById(contentId).innerHTML = `<p>Select a node in the diagram to view its details.</p>`;
+                    document.getElementById(contentId).innerHTML = `<p>Select a node or edge in the diagram to view its details.</p>`;
                     if(sysId) document.getElementById(sysId).innerText = "System Explorer";
                 }
             });
@@ -1703,6 +2723,7 @@
                 node.addEventListener('click', (e) => {
                     e.stopPropagation();
                     const id = node.getAttribute('id');
+                    if (!id) return;
                     
                     if (e.ctrlKey || e.metaKey) {
                         if (selectedSet.has(id)) selectedSet.delete(id);
@@ -1716,16 +2737,20 @@
                     
                     window.updateInspectorMulti(selectedSet, detailMap, titleId, contentId, sysId);
                     svgNodes.forEach(n => {
-                        if (selectedSet.has(n.getAttribute('id')) || (window.expandedNodeId === n.getAttribute('id'))) n.style.opacity = '1';
-                        else n.style.opacity = '0.4';
+                        const nId = n.getAttribute('id');
+                        if (!nId) return;
+                        if (selectedSet.has(nId) || (window.expandedNodeId === nId)) n.style.opacity = '1';
+                        else n.style.opacity = '0.3';
                     });
                 });
             });
 
             if (window.expandedNodeId || selectedSet.size > 0) {
                 svgNodes.forEach(n => {
-                    if (selectedSet.has(n.getAttribute('id')) || window.expandedNodeId === n.getAttribute('id')) n.style.opacity = '1';
-                    else n.style.opacity = '0.4';
+                    const nId = n.getAttribute('id');
+                    if (!nId) return;
+                    if (selectedSet.has(nId) || window.expandedNodeId === nId) n.style.opacity = '1';
+                    else n.style.opacity = '0.3';
                 });
                 if(selectedSet.size > 0) window.updateInspectorMulti(selectedSet, detailMap, titleId, contentId, sysId);
             }
@@ -1847,6 +2872,21 @@
             window.switchTemplate('class');
             window.renderERD();
             window.renderPathwayERD();
+        };
+
+        // --- Monitor Group Toggle (for Section 7) ---
+        window.toggleMonitorGroup = function(headerElement) {
+            const content = headerElement.nextElementSibling;
+            const isHidden = content.classList.contains('hidden');
+            const icon = headerElement.querySelector('.material-symbols-outlined:last-child');
+            
+            if (isHidden) {
+                content.classList.remove('hidden');
+                icon.innerText = 'expand_less';
+            } else {
+                content.classList.add('hidden');
+                icon.innerText = 'expand_more';
+            }
         };
     </script>
 </body>
